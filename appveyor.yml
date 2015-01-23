@@ -1,0 +1,18 @@
+version: 0.0.{build}
+
+configuration:
+  - Debug
+  - Release
+
+nuget:
+  disable_publish_on_pr: true
+
+build:
+  publish_nuget: true
+  publish_nuget_symbols: true
+  parallel: true
+  verbosity: normal
+
+artifacts:
+  - path: ControlFlow\bin\Debug
+  - path: ControlFlow\bin\Release
