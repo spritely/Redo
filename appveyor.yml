@@ -4,6 +4,9 @@ configuration:
   - Debug
   - Release
 
+install:
+  - nuget restore
+
 nuget:
   disable_publish_on_pr: true
 
