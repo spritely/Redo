@@ -6,9 +6,8 @@ namespace ControlFlow.Test
     public class TryTest
     {
         [Fact]
-        public void Fail()
+        public void Pass()
         {
-            throw new Exception();
         }
     }
 }
