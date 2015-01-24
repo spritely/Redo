@@ -6,8 +6,10 @@ namespace Spritely.ControlFlow.Test
     public class TryTest
     {
         [Fact]
-        public void Pass()
+        public void Until_hides_exception_from_caller()
         {
+            Try.Running(() => { throw new Exception(); })
+                .Until(() => true);
         }
     }
 }
