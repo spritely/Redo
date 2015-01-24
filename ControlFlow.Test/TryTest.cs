@@ -1,7 +1,7 @@
 ﻿using System;
 using Xunit;
 
-namespace ControlFlow.Test
+namespace Spritely.ControlFlow.Test
 {
     public class TryTest
     {
