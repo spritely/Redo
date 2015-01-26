@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlFlow", "ControlFlow\ControlFlow.csproj", "{D8FE417E-EEE7-4F6B-921C-C0E504ABA818}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redo", "Redo\Redo.csproj", "{D8FE417E-EEE7-4F6B-921C-C0E504ABA818}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlFlow.Test", "ControlFlow.Test\ControlFlow.Test.csproj", "{F99D72B4-19D0-44BF-95A8-CC1441AF933B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redo.Test", "Redo.Test\Redo.Test.csproj", "{F99D72B4-19D0-44BF-95A8-CC1441AF933B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

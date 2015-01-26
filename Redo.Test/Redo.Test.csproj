@@ -6,8 +6,8 @@
     <ProjectGuid>{F99D72B4-19D0-44BF-95A8-CC1441AF933B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Spritely.ControlFlow.Test</RootNamespace>
-    <AssemblyName>Spritely.ControlFlow.Test</AssemblyName>
+    <RootNamespace>Spritely.Redo.Test</RootNamespace>
+    <AssemblyName>Spritely.Redo.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -64,7 +64,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ControlFlow\ControlFlow.csproj">
+    <ProjectReference Include="..\Redo\Redo.csproj">
       <Project>{d8fe417e-eee7-4f6b-921c-c0e504aba818}</Project>
       <Name>ControlFlow</Name>
     </ProjectReference>

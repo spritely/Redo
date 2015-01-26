@@ -7,8 +7,8 @@
     <ProjectGuid>{D8FE417E-EEE7-4F6B-921C-C0E504ABA818}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Spritely.ControlFlow</RootNamespace>
-    <AssemblyName>Spritely.ControlFlow</AssemblyName>
+    <RootNamespace>Spritely.Redo</RootNamespace>
+    <AssemblyName>Spritely.Redo</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
