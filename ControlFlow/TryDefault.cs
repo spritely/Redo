@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Spritely.ControlFlow
+﻿namespace Spritely.ControlFlow
 {
     public static class TryDefault
     {
@@ -10,7 +8,7 @@ namespace Spritely.ControlFlow
         {
             get
             {
-                return retryStrategy ?? (retryStrategy = new SleepAndInfiniteRetryStrategy());
+                return retryStrategy ?? (retryStrategy = new SleepWithInfiniteRetriesStrategy());
             }
             set
             {

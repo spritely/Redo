@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="SleepAndInfiniteRetryStrategy.cs" />
+    <Compile Include="SleepWithInfiniteRetriesStrategy.cs" />
     <Compile Include="TryAction.cs" />
     <Compile Include="IRetryStrategy.cs" />
     <Compile Include="TryDefault.cs" />
