@@ -31,5 +31,12 @@ namespace Spritely.Redo
 
             return this;
         }
+
+        public TryAction With(LogException exceptionLogger)
+        {
+            this.Configuration.ExceptionLoggers += exceptionLogger;
+
+            return this;
+        }
     }
 }

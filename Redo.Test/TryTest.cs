@@ -22,6 +22,42 @@ namespace Spritely.Redo.Test
         }
 
         [Fact]
+        public void Until_uses_default_retry_strategy_on_action_runners()
+        {
+            var retryStrategy = new Mock<IRetryStrategy>();
+            TryDefault.RetryStrategy = retryStrategy.Object;
+
+            // On exception ShouldQuit() = false so code will reach Wait()
+            retryStrategy.Setup(s => s.ShouldQuit()).Returns(false);
+
+            // Run twice to ensure Until() reaches Wait()
+            var times = 1;
+            Try.Running(() => { throw new Exception(); })
+                .Until(() => times++ == 2);
+
+            retryStrategy.Verify(s => s.ShouldQuit(), Times.AtLeastOnce);
+            retryStrategy.Verify(s => s.Wait(), Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public void Until_uses_default_retry_strategy_on_function_runners()
+        {
+            var retryStrategy = new Mock<IRetryStrategy>();
+            TryDefault.RetryStrategy = retryStrategy.Object;
+
+            // On exception ShouldQuit() = false so code will reach Wait()
+            retryStrategy.Setup(s => s.ShouldQuit()).Returns(false);
+
+            // Run twice to ensure Until() reaches Wait()
+            var times = 1;
+            Try.Running<object>(() => { throw new Exception(); })
+                .Until(_ => times++ == 2);
+
+            retryStrategy.Verify(s => s.ShouldQuit(), Times.AtLeastOnce);
+            retryStrategy.Verify(s => s.Wait(), Times.AtLeastOnce);
+        }
+
+        [Fact]
         public void With_sets_the_retry_strategy_on_action_runners()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -217,6 +253,58 @@ namespace Spritely.Redo.Test
             {
                 Assert.Same(expectedException, actualException);
             }
+        }
+
+        [Fact]
+        public void Until_logs_exceptions_to_default_delegates_on_action_runners()
+        {
+            var expectedException = new Exception();
+            Exception actualException = null;
+            TryDefault.ExceptionLoggers += ex => actualException = ex;
+
+            Try.Running(() => { throw expectedException; })
+                .Until(() => true);
+
+            Assert.Same(expectedException, actualException);
+        }
+
+        [Fact]
+        public void Until_logs_exceptions_to_default_delegates_on_function_runners()
+        {
+            var expectedException = new Exception();
+            Exception actualException = null;
+            TryDefault.ExceptionLoggers += ex => actualException = ex;
+
+            Try.Running<object>(() => { throw expectedException; })
+                .Until(_ => true);
+
+            Assert.Same(expectedException, actualException);
+        }
+
+        [Fact]
+        public void Until_logs_exceptions_to_call_specific_delegates_on_action_runners()
+        {
+            var expectedException = new Exception();
+            Exception actualException = null;
+
+            Try.Running(() => { throw expectedException; })
+                .With(ex => actualException = ex)
+                .Until(() => true);
+
+            Assert.Same(expectedException, actualException);
+        }
+
+        [Fact]
+        public void Until_logs_exceptions_to_call_specific_delegates_on_function_runners()
+        {
+            var expectedException = new Exception();
+            Exception actualException = null;
+
+            Try.Running<object>(() => { throw expectedException; })
+                .With(ex => actualException = ex)
+                .Until(_ => true);
+
+            Assert.Same(expectedException, actualException);
         }
     }
 }

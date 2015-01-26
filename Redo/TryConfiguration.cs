@@ -18,9 +18,23 @@ namespace Spritely.Redo
             }
         }
 
+        private LogException exceptionLoggers;
+
+        public LogException ExceptionLoggers
+        {
+            get
+            {
+                return this.exceptionLoggers ?? (this.exceptionLoggers = TryDefault.ExceptionLoggers);
+            }
+            set
+            {
+                this.exceptionLoggers = value;
+            }
+        }
+
         public void Log(Exception ex)
         {
-            // TODO: Allow callers to attach delegates that can be called
+            this.ExceptionLoggers(ex);
         }
     }
 }

@@ -36,6 +36,7 @@
     <Compile Include="IRetryStrategy.cs" />
     <Compile Include="TryDefault.cs" />
     <Compile Include="TryConfiguration.cs" />
+    <Compile Include="Delegates.cs" />
     <Compile Include="UntilExtension.cs" />
     <Compile Include="TryFunction.cs" />
     <Compile Include="Try.cs" />

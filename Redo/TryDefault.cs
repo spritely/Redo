@@ -15,5 +15,19 @@
                 retryStrategy = value;
             }
         }
+
+        private static LogException exceptionLoggers;
+
+        public static LogException ExceptionLoggers
+        {
+            get
+            {
+                return exceptionLoggers ?? (exceptionLoggers = ex => {});
+            }
+            set
+            {
+                exceptionLoggers = value;
+            }
+        }
     }
 }
