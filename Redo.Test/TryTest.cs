@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Xunit;
 
-namespace Spritely.ControlFlow.Test
+namespace Spritely.Redo.Test
 {
     public class TryTest
     {

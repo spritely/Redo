@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Spritely.ControlFlow
+namespace Spritely.Redo
 {
     internal class TryConfiguration
     {

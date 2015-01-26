@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Spritely.ControlFlow
+namespace Spritely.Redo
 {
     /// <summary>
     /// The main entry point to start building a retryable function.

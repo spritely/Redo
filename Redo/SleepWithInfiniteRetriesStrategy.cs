@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 
-namespace Spritely.ControlFlow
+namespace Spritely.Redo
 {
     public class SleepWithInfiniteRetriesStrategy : IRetryStrategy
     {
