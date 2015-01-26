@@ -21,7 +21,7 @@ namespace Spritely.ControlFlow
                 this.F();
                 return null;
             });
-            
+
             f.Until<Exception, object>(_ => satisfied(), this.Configuration);
         }
 

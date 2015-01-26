@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace Spritely.ControlFlow
+﻿namespace Spritely.ControlFlow
 {
     public interface IRetryStrategy
     {

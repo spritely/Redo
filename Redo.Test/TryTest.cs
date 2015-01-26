@@ -1,6 +1,6 @@
-﻿using System;
+﻿using Moq;
+using System;
 using System.Linq;
-using Moq;
 using Xunit;
 
 namespace Spritely.ControlFlow.Test
@@ -28,7 +28,7 @@ namespace Spritely.ControlFlow.Test
 
             // On exception ShouldQuit() = false so code will reach Wait()
             retryStrategy.Setup(s => s.ShouldQuit()).Returns(false);
-            
+
             // Run twice to ensure Until() reaches Wait()
             var times = 1;
             Try.Running(() => { throw new Exception(); })
@@ -145,7 +145,7 @@ namespace Spritely.ControlFlow.Test
             retryStrategy.Setup(s => s.ShouldQuit()).Returns(true);
 
             var times = 0;
-            Assert.Throws<Exception>(() => 
+            Assert.Throws<Exception>(() =>
                 Try.Running<object>(() => { throw new Exception(); })
                     .With(retryStrategy.Object)
                     .Until(_ => times++ == 2)); // Do not return via Until on the first attempt
