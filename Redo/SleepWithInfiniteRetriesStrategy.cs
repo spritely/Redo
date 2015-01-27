@@ -26,7 +26,7 @@ namespace Spritely.Redo
 
         public void Wait()
         {
-            Thread.Sleep(SleepTime);
+            Thread.Sleep(this.SleepTime);
         }
     }
 }

@@ -16,11 +16,11 @@ namespace Spritely.Redo
         public void Until(Func<bool> satisfied)
         {
             // Converting Action into a Func<object> so Until logic can be shared
-            Func<object> f = (() =>
+            Func<object> f = () =>
             {
                 this.F();
                 return null;
-            });
+            };
 
             f.Until<Exception, object>(_ => satisfied(), this.Configuration);
         }

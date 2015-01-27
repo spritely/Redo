@@ -62,7 +62,7 @@ namespace Spritely.Redo.Test
         {
             var retryStrategy = new Mock<IRetryStrategy>();
 
-            var expected = new Object();
+            var expected = new object();
             var actual = Try.Running(() => expected)
                     .With(retryStrategy.Object)
                     .Until(_ => true);
