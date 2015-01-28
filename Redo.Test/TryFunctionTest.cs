@@ -1,24 +1,114 @@
-﻿using Moq;
-using System;
+﻿using System;
 using System.Linq;
+using Moq;
 using Xunit;
 
 namespace Spritely.Redo.Test
 {
-    // Most methods in this class have a near exact equivalent in TryActionTest
-    public class TryFunctionTest
+    public class TryFunctionTest : IDisposable
     {
+        public TryFunctionTest()
+        {
+            // Replace the default retry strategy with a test instance that doesn't delay and quits after 50 tries
+            var retryStrategy = new Mock<IRetryStrategy>();
+
+            // false, false, false...., true
+            var falseCount = 50;
+            var shouldQuitReturns =
+                Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] {true}).GetEnumerator();
+
+            retryStrategy.Setup(s => s.ShouldQuit()).Returns(() =>
+            {
+                shouldQuitReturns.MoveNext();
+                return shouldQuitReturns.Current;
+            });
+
+            TryDefault.RetryStrategy = retryStrategy.Object;
+        }
+
+        public void Dispose()
+        {
+            TryDefault.Reset();
+        }
+
         [Fact]
         public void Running_throws_on_null_argument()
         {
             Assert.Throws<ArgumentNullException>(() => Try.Running(null as Func<object>));
         }
 
+        // TryFunctionTest validates shared functional paths between TryAction and TryFunction.
+        // These next two methods ensure the TryFunction methods call the same underlying functionality.
         [Fact]
-        public void Until_hides_exception_from_caller()
+        public void until_defaults_to_UntilExtension_Until()
         {
-            Try.Running<object>(() => { throw new Exception(); })
-                .Until(_ => true);
+            var tryFunction = Try.Running(() => true);
+
+            Assert.Equal(Run.Until, tryFunction.until);
+        }
+
+        [Fact]
+        public void Until_calls_until_with_expected_parameters()
+        {
+            var expectedResult = new object();
+            Func<object, bool> expectedSatisfied = _ => true;
+            var expectedConfiguration = new TryConfiguration();
+
+            Func<object, bool> actualSatisfied = null;
+            TryConfiguration actualConfiguration = null;
+
+            var tryAction = Try.Running(() => expectedResult);
+            tryAction.configuration = expectedConfiguration;
+            tryAction.until = (f, satisfied, configuration) =>
+            {
+                actualSatisfied = satisfied;
+                actualConfiguration = configuration;
+                return f();
+            };
+
+            var actualResult = tryAction.Until(expectedSatisfied);
+
+            Assert.Same(expectedResult, actualResult);
+            Assert.Same(expectedSatisfied, actualSatisfied);
+            Assert.Same(expectedConfiguration, actualConfiguration);
+        }
+
+        [Fact]
+        public void With_sets_configuration_RetryStrategy()
+        {
+            var tryAction = Try.Running(() => true);
+
+            var configuration = new TryConfiguration();
+            var retryStrategy = new Mock<IRetryStrategy>();
+            tryAction.configuration = configuration;
+
+            tryAction.With(retryStrategy.Object);
+
+            Assert.Same(retryStrategy.Object, configuration.RetryStrategy);
+        }
+
+        [Fact]
+        public void Report_adds_value_to_configuration_ExceptionListeners()
+        {
+            var tryAction = Try.Running(() => true);
+            var expectedException = new Exception();
+            Exception actualException = null;
+
+            tryAction.Report(ex => actualException = ex);
+
+            tryAction.configuration.ExceptionListeners(expectedException);
+
+            Assert.Same(expectedException, actualException);
+        }
+
+        [Fact]
+        public void Handle_adds_exception_to_configuration_Handles()
+        {
+            var tryAction = Try.Running(() => true);
+
+            tryAction.Handle<TestException1>();
+
+            Assert.True(tryAction.configuration.Handles.Contains(typeof (TestException1)));
         }
 
         [Fact]
@@ -31,9 +121,9 @@ namespace Spritely.Redo.Test
             retryStrategy.Setup(s => s.ShouldQuit()).Returns(false);
 
             // Run twice to ensure Until() reaches Wait()
-            var times = 1;
+            var i = 0;
             Try.Running<object>(() => { throw new Exception(); })
-                .Until(_ => times++ == 2);
+                .Until(_ => i++ >= 1);
 
             retryStrategy.Verify(s => s.ShouldQuit(), Times.AtLeastOnce);
             retryStrategy.Verify(s => s.Wait(), Times.AtLeastOnce);
@@ -48,10 +138,10 @@ namespace Spritely.Redo.Test
             retryStrategy.Setup(s => s.ShouldQuit()).Returns(false);
 
             // Run twice to ensure Until() reaches Wait()
-            var times = 1;
+            var i = 0;
             Try.Running<object>(() => { throw new Exception(); })
                 .With(retryStrategy.Object)
-                .Until(_ => times++ == 2);
+                .Until(_ => i++ >= 1);
 
             retryStrategy.Verify(s => s.ShouldQuit(), Times.AtLeastOnce);
             retryStrategy.Verify(s => s.Wait(), Times.AtLeastOnce);
@@ -64,10 +154,28 @@ namespace Spritely.Redo.Test
 
             var expected = new object();
             var actual = Try.Running(() => expected)
-                    .With(retryStrategy.Object)
-                    .Until(_ => true);
+                .With(retryStrategy.Object)
+                .Until(_ => true);
 
             Assert.Same(expected, actual);
+        }
+
+        [Fact]
+        public void Until_retries_until_Until_returns_true()
+        {
+            var retryStrategy = new Mock<IRetryStrategy>();
+            TryDefault.RetryStrategy = retryStrategy.Object;
+
+            // false, false, false...., true
+            var falseCount = new Random().Next(2, 10);
+            var untilReturns = Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] {true}).ToList();
+            var calls = 0;
+
+            Try.Running<object>(() => { throw new Exception(); })
+                .With(retryStrategy.Object)
+                .Until(_ => untilReturns[calls++]);
+
+            Assert.Equal(falseCount + 1, calls);
         }
 
         [Fact]
@@ -77,7 +185,8 @@ namespace Spritely.Redo.Test
 
             // false, false, false...., true
             var falseCount = new Random().Next(2, 10);
-            var shouldQuitReturns = Enumerable.Range(0, falseCount).Select(i => false).Concat(new bool[] { true }).GetEnumerator();
+            var shouldQuitReturns =
+                Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] {true}).GetEnumerator();
             var calls = 0;
             retryStrategy.Setup(s => s.ShouldQuit()).Returns(() =>
             {
@@ -91,7 +200,7 @@ namespace Spritely.Redo.Test
             Assert.Throws<Exception>(() =>
                 Try.Running<object>(() => { throw new Exception(); })
                     .With(retryStrategy.Object)
-                    .Until(_ => times++ == (falseCount + 2))); // No infinite loop on test failure
+                    .Until(_ => times++ >= (falseCount + 2))); // No infinite loop on test failure
 
             Assert.Equal(falseCount + 1, calls);
         }
@@ -103,11 +212,11 @@ namespace Spritely.Redo.Test
 
             retryStrategy.Setup(s => s.ShouldQuit()).Returns(true);
 
-            var times = 0;
+            var i = 0;
             Assert.Throws<Exception>(() =>
                 Try.Running<object>(() => { throw new Exception(); })
                     .With(retryStrategy.Object)
-                    .Until(_ => times++ == 2)); // Do not return via Until on the first attempt
+                    .Until(_ => i++ >= 2)); // Do not return via Until on the first attempt
 
             retryStrategy.Verify(s => s.Wait(), Times.Never);
         }
@@ -132,12 +241,12 @@ namespace Spritely.Redo.Test
             retryStrategy.Setup(s => s.ShouldQuit()).Returns(true);
 
             var expectedException = new Exception();
-            var times = 0;
+            var i = 0;
             try
             {
                 Try.Running<object>(() => { throw expectedException; })
                     .With(retryStrategy.Object)
-                    .Until(_ => times++ == 2); // No infinite loop on test failure
+                    .Until(_ => i++ >= 2); // No infinite loop on test failure
             }
             catch (Exception actualException)
             {
@@ -146,11 +255,11 @@ namespace Spritely.Redo.Test
         }
 
         [Fact]
-        public void Until_logs_exceptions_to_default_delegates()
+        public void Until_reports_exceptions_to_default_delegates()
         {
             var expectedException = new Exception();
             Exception actualException = null;
-            TryDefault.ExceptionLoggers += ex => actualException = ex;
+            TryDefault.ExceptionListeners += ex => actualException = ex;
 
             Try.Running<object>(() => { throw expectedException; })
                 .Until(_ => true);
@@ -159,16 +268,108 @@ namespace Spritely.Redo.Test
         }
 
         [Fact]
-        public void Until_logs_exceptions_to_call_specific_delegates()
+        public void Until_reports_exceptions_to_call_specific_delegates()
         {
             var expectedException = new Exception();
             Exception actualException = null;
 
             Try.Running<object>(() => { throw expectedException; })
-                .With(ex => actualException = ex)
+                .Report(ex => actualException = ex)
                 .Until(_ => true);
 
             Assert.Same(expectedException, actualException);
+        }
+
+        [Fact]
+        public void Until_defaults_to_handling_Exception_when_no_default_handlers_specified()
+        {
+            Try.Running<object>(() => { throw new Exception(); })
+                .Until(_ => true);
+        }
+
+        [Fact]
+        public void Until_uses_default_exception_handler_when_Handle_not_called()
+        {
+            TryDefault.AddHandle<TestException1>();
+
+            Try.Running<object>(() => { throw new TestException1(); })
+                .Until(_ => true);
+
+            Assert.Throws<Exception>(() =>
+                Try.Running<object>(() => { throw new Exception(); })
+                    .Until(_ => true));
+        }
+
+        [Fact]
+        public void Until_handles_exceptions_specified_with_Handle()
+        {
+            Try.Running<object>(() => { throw new TestException1(); })
+                .Handle<TestException1>()
+                .Until(_ => true);
+        }
+
+        [Fact]
+        public void Until_propagates_exceptions_not_specified_with_Handle()
+        {
+            Assert.Throws<Exception>(() =>
+                Try.Running<object>(() => { throw new Exception(); })
+                    .Handle<TestException1>()
+                    .Until(_ => true));
+        }
+
+        [Fact]
+        public void Until_handles_multiple_exception_types_specified_with_Handle()
+        {
+            var retryStrategy = new Mock<IRetryStrategy>();
+            TryDefault.RetryStrategy = retryStrategy.Object;
+
+            var i = 0;
+            Try.Running<object>(() =>
+            {
+                if (i == 0)
+                {
+                    throw new TestException1();
+                }
+
+                throw new TestException2();
+            })
+                .Handle<TestException1>()
+                .Handle<TestException2>()
+                .Until(_ => i++ >= 2);
+        }
+
+        [Fact]
+        public void Until_propagates_exceptions_not_specified_with_multiple_Handle_calls()
+        {
+            var retryStrategy = new Mock<IRetryStrategy>();
+            TryDefault.RetryStrategy = retryStrategy.Object;
+
+            var i = 0;
+            Assert.Throws<TestException3>(() =>
+                Try.Running<object>(() =>
+                {
+                    if (i == 0)
+                    {
+                        throw new TestException1();
+                    }
+
+                    throw new TestException3();
+                })
+                    .Handle<TestException1>()
+                    .Handle<TestException2>()
+                    .Until(_ => i++ >= 2));
+        }
+
+        private class TestException1 : Exception
+        {
+        }
+
+        private class TestException2 : Exception
+        {
+        }
+
+        private class TestException3 : Exception
+        {
         }
     }
 }

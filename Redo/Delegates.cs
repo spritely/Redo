@@ -2,5 +2,5 @@
 
 namespace Spritely.Redo
 {
-    public delegate void LogException(Exception ex);
+    public delegate void ExceptionListener(Exception ex);
 }

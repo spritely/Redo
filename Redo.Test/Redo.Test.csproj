@@ -57,6 +57,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="TryTest.cs" />
     <Compile Include="TryActionTest.cs" />
     <Compile Include="TryFunctionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -67,7 +68,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Redo\Redo.csproj">
       <Project>{d8fe417e-eee7-4f6b-921c-c0e504aba818}</Project>
-      <Name>ControlFlow</Name>
+      <Name>Redo</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

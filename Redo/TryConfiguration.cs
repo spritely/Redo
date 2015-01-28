@@ -4,37 +4,13 @@ namespace Spritely.Redo
 {
     internal class TryConfiguration
     {
-        private IRetryStrategy retryStrategy;
+        public IRetryStrategy RetryStrategy { get; set; }
+        public ExceptionListener ExceptionListeners { get; set; }
+        public ExceptionList Handles { get; set; }
 
-        public IRetryStrategy RetryStrategy
+        public void Report(Exception ex)
         {
-            get
-            {
-                return this.retryStrategy ?? (this.retryStrategy = TryDefault.RetryStrategy);
-            }
-            set
-            {
-                this.retryStrategy = value;
-            }
-        }
-
-        private LogException exceptionLoggers;
-
-        public LogException ExceptionLoggers
-        {
-            get
-            {
-                return this.exceptionLoggers ?? (this.exceptionLoggers = TryDefault.ExceptionLoggers);
-            }
-            set
-            {
-                this.exceptionLoggers = value;
-            }
-        }
-
-        public void Log(Exception ex)
-        {
-            this.ExceptionLoggers(ex);
+            this.ExceptionListeners(ex);
         }
     }
 }

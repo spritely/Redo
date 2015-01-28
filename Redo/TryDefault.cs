@@ -1,32 +1,74 @@
-﻿namespace Spritely.Redo
+﻿using System;
+
+namespace Spritely.Redo
 {
     public static class TryDefault
     {
+        internal static object Lock = new object();
+        internal static ExceptionList handles;
         private static IRetryStrategy retryStrategy;
+        private static ExceptionListener exceptionListeners;
+
+        static TryDefault()
+        {
+            Reset();
+        }
 
         public static IRetryStrategy RetryStrategy
         {
-            get
-            {
-                return retryStrategy ?? (retryStrategy = new SleepWithInfiniteRetriesStrategy());
-            }
+            get { return retryStrategy; }
             set
             {
-                retryStrategy = value;
+                lock (Lock)
+                {
+                    retryStrategy = value ?? new SleepWithInfiniteRetriesStrategy();
+                }
             }
         }
 
-        private static LogException exceptionLoggers;
-
-        public static LogException ExceptionLoggers
+        public static ExceptionListener ExceptionListeners
         {
-            get
-            {
-                return exceptionLoggers ?? (exceptionLoggers = ex => {});
-            }
+            get { return exceptionListeners; }
             set
             {
-                exceptionLoggers = value;
+                lock (Lock)
+                {
+                    exceptionListeners = value ?? (exceptionListeners = ex => { });
+                }
+            }
+        }
+
+        public static void AddHandle<T>() where T : Exception
+        {
+            lock (Lock)
+            {
+                handles.Add<T>();
+            }
+        }
+
+        public static void RemoveHandle<T>() where T : Exception
+        {
+            lock (Lock)
+            {
+                handles.Remove<T>();
+            }
+        }
+
+        public static void ResetHandles<T>() where T : Exception
+        {
+            lock (Lock)
+            {
+                handles.Reset();
+            }
+        }
+
+        public static void Reset()
+        {
+            lock (Lock)
+            {
+                retryStrategy = new SleepWithInfiniteRetriesStrategy();
+                exceptionListeners = ex => { };
+                handles = new ExceptionList();
             }
         }
     }
