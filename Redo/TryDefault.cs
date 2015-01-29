@@ -8,10 +8,31 @@ namespace Spritely.Redo
         internal static ExceptionList handles;
         private static IRetryStrategy retryStrategy;
         private static ExceptionListener exceptionListeners;
+        private static TimeSpan delay;
+        private static int maxRetries;
 
-        static TryDefault()
+        public static TimeSpan Delay
         {
-            Reset();
+            get { return delay; }
+            set
+            {
+                lock (Lock)
+                {
+                    delay = value;
+                }
+            }
+        }
+
+        public static int MaxRetries
+        {
+            get { return maxRetries; }
+            set
+            {
+                lock (Lock)
+                {
+                    maxRetries = value;
+                }
+            }
         }
 
         public static IRetryStrategy RetryStrategy
@@ -21,7 +42,7 @@ namespace Spritely.Redo
             {
                 lock (Lock)
                 {
-                    retryStrategy = value ?? new SleepWithInfiniteRetriesStrategy();
+                    retryStrategy = value ?? new SimpleDelayRetryStrategy();
                 }
             }
         }
@@ -36,6 +57,11 @@ namespace Spritely.Redo
                     exceptionListeners = value ?? (exceptionListeners = ex => { });
                 }
             }
+        }
+
+        static TryDefault()
+        {
+            Reset();
         }
 
         public static void AddHandle<T>() where T : Exception
@@ -66,9 +92,11 @@ namespace Spritely.Redo
         {
             lock (Lock)
             {
-                retryStrategy = new SleepWithInfiniteRetriesStrategy();
+                retryStrategy = new SimpleDelayRetryStrategy();
                 exceptionListeners = ex => { };
                 handles = new ExceptionList();
+                maxRetries = 30;
+                delay = TimeSpan.FromSeconds(1);
             }
         }
     }

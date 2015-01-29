@@ -2,8 +2,7 @@
 {
     public interface IRetryStrategy
     {
-        bool ShouldQuit();
-
-        void Wait();
+        bool ShouldQuit(long attempt);
+        void Wait(long attampt);
     }
 }

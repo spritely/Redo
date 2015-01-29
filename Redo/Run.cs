@@ -9,6 +9,7 @@ namespace Spritely.Redo
             TryConfiguration configuration)
         {
             var result = default(TResult);
+            var attempt = 1L;
             while (true)
             {
                 try
@@ -28,7 +29,7 @@ namespace Spritely.Redo
                         throw;
                     }
 
-                    if (configuration.RetryStrategy.ShouldQuit())
+                    if (configuration.RetryStrategy.ShouldQuit(attempt))
                     {
                         throw;
                     }
@@ -39,7 +40,7 @@ namespace Spritely.Redo
                     return result;
                 }
 
-                configuration.RetryStrategy.Wait();
+                configuration.RetryStrategy.Wait(attempt++);
             }
         }
     }

@@ -32,7 +32,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ExceptionList.cs" />
-    <Compile Include="SleepWithInfiniteRetriesStrategy.cs" />
+    <Compile Include="ProgressiveDelayRetryStrategy.cs" />
+    <Compile Include="SafeDelay.cs" />
+    <Compile Include="ExponentialDelayRetryStrategy.cs" />
+    <Compile Include="LinearDelayRetryStrategy.cs" />
+    <Compile Include="SimpleDelayRetryStrategy.cs" />
     <Compile Include="TryAction.cs" />
     <Compile Include="IRetryStrategy.cs" />
     <Compile Include="TryDefault.cs" />

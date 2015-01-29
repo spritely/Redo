@@ -43,6 +43,11 @@ namespace Spritely.Redo
             this.until(f, _ => satisfied(), this.configuration);
         }
 
+        public void Now()
+        {
+            this.Until(() => true);
+        }
+
         public TryAction With(IRetryStrategy retryStrategy)
         {
             this.configuration.RetryStrategy = retryStrategy;

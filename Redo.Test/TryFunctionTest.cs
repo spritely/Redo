@@ -12,16 +12,8 @@ namespace Spritely.Redo.Test
             // Replace the default retry strategy with a test instance that doesn't delay and quits after 50 tries
             var retryStrategy = new Mock<IRetryStrategy>();
 
-            // false, false, false...., true
-            var falseCount = 50;
-            var shouldQuitReturns =
-                Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] {true}).GetEnumerator();
-
-            retryStrategy.Setup(s => s.ShouldQuit()).Returns(() =>
-            {
-                shouldQuitReturns.MoveNext();
-                return shouldQuitReturns.Current;
-            });
+            // false, false, false...., true (when ran 50 times)
+            retryStrategy.Setup(s => s.ShouldQuit(It.IsAny<long>())).Returns<long>(attempt => attempt > 50);
 
             TryDefault.RetryStrategy = retryStrategy.Object;
         }
@@ -74,6 +66,32 @@ namespace Spritely.Redo.Test
         }
 
         [Fact]
+        public void Now_calls_until_with_expected_parameters()
+        {
+            var expectedResult = new object();
+            var satisfiedCallResult = false;
+            var expectedConfiguration = new TryConfiguration();
+
+            Func<object, bool> actualSatisfied = null;
+            TryConfiguration actualConfiguration = null;
+
+            var tryAction = Try.Running(() => expectedResult);
+            tryAction.configuration = expectedConfiguration;
+            tryAction.until = (f, satisfied, configuration) =>
+            {
+                satisfiedCallResult = satisfied(null);
+                actualConfiguration = configuration;
+                return f();
+            };
+
+            var actualResult = tryAction.Now();
+
+            Assert.Same(expectedResult, actualResult);
+            Assert.True(satisfiedCallResult);
+            Assert.Same(expectedConfiguration, actualConfiguration);
+        }
+
+        [Fact]
         public void With_sets_configuration_RetryStrategy()
         {
             var tryAction = Try.Running(() => true);
@@ -118,15 +136,15 @@ namespace Spritely.Redo.Test
             TryDefault.RetryStrategy = retryStrategy.Object;
 
             // On exception ShouldQuit() = false so code will reach Wait()
-            retryStrategy.Setup(s => s.ShouldQuit()).Returns(false);
+            retryStrategy.Setup(s => s.ShouldQuit(It.IsAny<long>())).Returns(false);
 
             // Run twice to ensure Until() reaches Wait()
             var i = 0;
             Try.Running<object>(() => { throw new Exception(); })
                 .Until(_ => i++ >= 1);
 
-            retryStrategy.Verify(s => s.ShouldQuit(), Times.AtLeastOnce);
-            retryStrategy.Verify(s => s.Wait(), Times.AtLeastOnce);
+            retryStrategy.Verify(s => s.ShouldQuit(It.IsAny<long>()), Times.AtLeastOnce);
+            retryStrategy.Verify(s => s.Wait(It.IsAny<long>()), Times.AtLeastOnce);
         }
 
         [Fact]
@@ -135,7 +153,7 @@ namespace Spritely.Redo.Test
             var retryStrategy = new Mock<IRetryStrategy>();
 
             // On exception ShouldQuit() = false so code will reach Wait()
-            retryStrategy.Setup(s => s.ShouldQuit()).Returns(false);
+            retryStrategy.Setup(s => s.ShouldQuit(It.IsAny<long>())).Returns(false);
 
             // Run twice to ensure Until() reaches Wait()
             var i = 0;
@@ -143,8 +161,23 @@ namespace Spritely.Redo.Test
                 .With(retryStrategy.Object)
                 .Until(_ => i++ >= 1);
 
-            retryStrategy.Verify(s => s.ShouldQuit(), Times.AtLeastOnce);
-            retryStrategy.Verify(s => s.Wait(), Times.AtLeastOnce);
+            retryStrategy.Verify(s => s.ShouldQuit(It.IsAny<long>()), Times.AtLeastOnce);
+            retryStrategy.Verify(s => s.Wait(It.IsAny<long>()), Times.AtLeastOnce);
+        }
+
+        [Fact]
+        public void RetryStrategy_Wait_is_called_with_current_1_based_attempt_value()
+        {
+            var retryStrategy = new Mock<IRetryStrategy>();
+            var i = 0;
+
+            retryStrategy.Setup(s => s.Wait(i + 1)).Verifiable();
+
+            Try.Running<object>(() => { throw new Exception(); })
+                .With(retryStrategy.Object)
+                .Until(_ => i++ >= 10);
+
+            retryStrategy.Verify();
         }
 
         [Fact]
@@ -188,11 +221,10 @@ namespace Spritely.Redo.Test
             var shouldQuitReturns =
                 Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] {true}).GetEnumerator();
             var calls = 0;
-            retryStrategy.Setup(s => s.ShouldQuit()).Returns(() =>
+            retryStrategy.Setup(s => s.ShouldQuit(It.IsAny<long>())).Returns<long>(attempt =>
             {
                 calls++;
-                shouldQuitReturns.MoveNext();
-                return shouldQuitReturns.Current;
+                return attempt > falseCount;
             });
 
             var times = 0;
@@ -210,7 +242,7 @@ namespace Spritely.Redo.Test
         {
             var retryStrategy = new Mock<IRetryStrategy>();
 
-            retryStrategy.Setup(s => s.ShouldQuit()).Returns(true);
+            retryStrategy.Setup(s => s.ShouldQuit(It.IsAny<long>())).Returns(true);
 
             var i = 0;
             Assert.Throws<Exception>(() =>
@@ -218,7 +250,7 @@ namespace Spritely.Redo.Test
                     .With(retryStrategy.Object)
                     .Until(_ => i++ >= 2)); // Do not return via Until on the first attempt
 
-            retryStrategy.Verify(s => s.Wait(), Times.Never);
+            retryStrategy.Verify(s => s.Wait(It.IsAny<long>()), Times.Never);
         }
 
         [Fact]
@@ -230,7 +262,7 @@ namespace Spritely.Redo.Test
                 .With(retryStrategy.Object)
                 .Until(_ => true);
 
-            retryStrategy.Verify(s => s.Wait(), Times.Never);
+            retryStrategy.Verify(s => s.Wait(It.IsAny<long>()), Times.Never);
         }
 
         [Fact]
@@ -238,7 +270,7 @@ namespace Spritely.Redo.Test
         {
             var retryStrategy = new Mock<IRetryStrategy>();
 
-            retryStrategy.Setup(s => s.ShouldQuit()).Returns(true);
+            retryStrategy.Setup(s => s.ShouldQuit(It.IsAny<long>())).Returns(true);
 
             var expectedException = new Exception();
             var i = 0;

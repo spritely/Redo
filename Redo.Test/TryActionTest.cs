@@ -1,6 +1,6 @@
-﻿using Moq;
-using System;
+﻿using System;
 using System.Linq;
+using Moq;
 using Xunit;
 
 namespace Spritely.Redo.Test
@@ -31,7 +31,6 @@ namespace Spritely.Redo.Test
             var satisfiedCalled = false;
             var expectedConfiguration = new TryConfiguration();
 
-            Func<object, bool> actualSatisfied = null;
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.Running(() => { fCalled = true; });
@@ -52,6 +51,32 @@ namespace Spritely.Redo.Test
 
             Assert.True(fCalled);
             Assert.True(satisfiedCalled);
+            Assert.Same(expectedConfiguration, actualConfiguration);
+        }
+
+        [Fact]
+        public void Now_calls_until_with_expected_parameters()
+        {
+            var fCalled = false;
+            var satisfiedCallResult = false;
+            var expectedConfiguration = new TryConfiguration();
+
+            TryConfiguration actualConfiguration = null;
+
+            var tryAction = Try.Running(() => { fCalled = true; });
+            tryAction.configuration = expectedConfiguration;
+            tryAction.until = (f, satisfied, configuration) =>
+            {
+                f();
+                satisfiedCallResult = satisfied(null);
+                actualConfiguration = configuration;
+                return null;
+            };
+
+            tryAction.Now();
+
+            Assert.True(fCalled);
+            Assert.True(satisfiedCallResult);
             Assert.Same(expectedConfiguration, actualConfiguration);
         }
 
@@ -90,7 +115,7 @@ namespace Spritely.Redo.Test
 
             tryAction.Handle<TestException>();
 
-            Assert.True(tryAction.configuration.Handles.Contains(typeof(TestException)));
+            Assert.True(tryAction.configuration.Handles.Contains(typeof (TestException)));
         }
 
         private class TestException : Exception
