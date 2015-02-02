@@ -1,4 +1,11 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="ExceptionList.cs">
+//   Copyright (c) 2015. All rights reserved.
+//   Licensed under the MIT license. See LICENSE file in the project root for full license information.
+// </copyright>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -20,12 +27,12 @@ namespace Spritely.Redo
 
         public void Add<T>() where T : Exception
         {
-            this.exceptions.Add(typeof (T));
+            this.exceptions.Add(typeof(T));
         }
 
         public void Add(Type t)
         {
-            if (!typeof (Exception).IsAssignableFrom(t))
+            if (!typeof(Exception).IsAssignableFrom(t))
             {
                 throw new ArgumentException("Type t must be an Exception type");
             }
@@ -35,7 +42,7 @@ namespace Spritely.Redo
 
         public void Remove<T>() where T : Exception
         {
-            this.exceptions.Remove(typeof (T));
+            this.exceptions.Remove(typeof(T));
         }
 
         public void Reset()
