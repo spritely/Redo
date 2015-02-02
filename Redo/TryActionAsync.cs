@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Spritely.Redo
 {
-    public class TryAction : TryConfigurable<TryAction>
+    public class TryActionAsync : TryConfigurable<TryActionAsync>
     {
         internal Action f;
         internal Func<Func<object>, Func<object, bool>, TryConfiguration, object> until = Run.Until;
 
-        public TryAction(Action f)
+        public TryActionAsync(Action f)
         {
             if (f == null)
             {
@@ -17,7 +18,7 @@ namespace Spritely.Redo
             this.f = f;
         }
 
-        public void Until(Func<bool> satisfied)
+        public async Task Until(Func<bool> satisfied)
         {
             // Converting Action into a Func<object> so Run logic can be shared
             Func<object> f = () =>
@@ -26,12 +27,12 @@ namespace Spritely.Redo
                 return null;
             };
 
-            this.until(f, _ => satisfied(), this.configuration);
+            await Task.Run(() => this.until(f, _ => satisfied(), this.configuration));
         }
 
-        public void Now()
+        public async Task Now()
         {
-            this.Until(() => true);
+            await Task.Run(() => this.Until(() => true));
         }
     }
 }

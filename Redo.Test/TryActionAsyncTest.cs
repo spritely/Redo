@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Linq;
-using Moq;
 using Xunit;
 
 namespace Spritely.Redo.Test
 {
-    public class TryActionTest
+    public class TryActionAsyncTest
     {
         [Fact]
         public void Running_throws_on_null_argument()
         {
-            Assert.Throws<ArgumentNullException>(() => Try.Running(null));
+            Assert.Throws<ArgumentNullException>(() => Try.RunningAsync(null));
         }
 
         // TryFunctionTest validates shared functional paths between TryAction and TryFunction.
@@ -18,7 +16,7 @@ namespace Spritely.Redo.Test
         [Fact]
         public void until_defaults_to_UntilExtension_Until()
         {
-            var tryAction = Try.Running(() => { });
+            var tryAction = Try.RunningAsync(() => { });
 
             Assert.Equal(Run.Until, tryAction.until);
         }
@@ -32,7 +30,7 @@ namespace Spritely.Redo.Test
 
             TryConfiguration actualConfiguration = null;
 
-            var tryAction = Try.Running(() => { fCalled = true; });
+            var tryAction = Try.RunningAsync(() => { fCalled = true; });
             tryAction.configuration = expectedConfiguration;
             tryAction.until = (f, satisfied, configuration) =>
             {
@@ -42,11 +40,13 @@ namespace Spritely.Redo.Test
                 return null;
             };
 
-            tryAction.Until(() =>
+            var until = tryAction.Until(() =>
             {
                 satisfiedCalled = true;
                 return true;
             });
+
+            until.Wait();
 
             Assert.True(fCalled);
             Assert.True(satisfiedCalled);
@@ -62,7 +62,7 @@ namespace Spritely.Redo.Test
 
             TryConfiguration actualConfiguration = null;
 
-            var tryAction = Try.Running(() => { fCalled = true; });
+            var tryAction = Try.RunningAsync(() => { fCalled = true; });
             tryAction.configuration = expectedConfiguration;
             tryAction.until = (f, satisfied, configuration) =>
             {
@@ -72,7 +72,9 @@ namespace Spritely.Redo.Test
                 return null;
             };
 
-            tryAction.Now();
+            var now = tryAction.Now();
+
+            now.Wait();
 
             Assert.True(fCalled);
             Assert.True(satisfiedCallResult);

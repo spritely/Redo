@@ -91,7 +91,6 @@ namespace Spritely.Redo.Test
         [Fact]
         public void CalculateSleepTime_returns_expected_delays()
         {
-            var scaleFactor = 10;
             var delay = TimeSpan.FromMilliseconds(2);
 
             Assert.Equal(2, ProgressiveDelayRetryStrategy.CalculateSleepTime(1, delay, 10).TotalMilliseconds);

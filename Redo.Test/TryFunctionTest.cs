@@ -72,7 +72,6 @@ namespace Spritely.Redo.Test
             var satisfiedCallResult = false;
             var expectedConfiguration = new TryConfiguration();
 
-            Func<object, bool> actualSatisfied = null;
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.Running(() => expectedResult);
@@ -89,44 +88,6 @@ namespace Spritely.Redo.Test
             Assert.Same(expectedResult, actualResult);
             Assert.True(satisfiedCallResult);
             Assert.Same(expectedConfiguration, actualConfiguration);
-        }
-
-        [Fact]
-        public void With_sets_configuration_RetryStrategy()
-        {
-            var tryAction = Try.Running(() => true);
-
-            var configuration = new TryConfiguration();
-            var retryStrategy = new Mock<IRetryStrategy>();
-            tryAction.configuration = configuration;
-
-            tryAction.With(retryStrategy.Object);
-
-            Assert.Same(retryStrategy.Object, configuration.RetryStrategy);
-        }
-
-        [Fact]
-        public void Report_adds_value_to_configuration_ExceptionListeners()
-        {
-            var tryAction = Try.Running(() => true);
-            var expectedException = new Exception();
-            Exception actualException = null;
-
-            tryAction.Report(ex => actualException = ex);
-
-            tryAction.configuration.ExceptionListeners(expectedException);
-
-            Assert.Same(expectedException, actualException);
-        }
-
-        [Fact]
-        public void Handle_adds_exception_to_configuration_Handles()
-        {
-            var tryAction = Try.Running(() => true);
-
-            tryAction.Handle<TestException1>();
-
-            Assert.True(tryAction.configuration.Handles.Contains(typeof (TestException1)));
         }
 
         [Fact]
@@ -201,7 +162,7 @@ namespace Spritely.Redo.Test
 
             // false, false, false...., true
             var falseCount = new Random().Next(2, 10);
-            var untilReturns = Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] {true}).ToList();
+            var untilReturns = Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] { true }).ToList();
             var calls = 0;
 
             Try.Running<object>(() => { throw new Exception(); })
@@ -219,7 +180,7 @@ namespace Spritely.Redo.Test
             // false, false, false...., true
             var falseCount = new Random().Next(2, 10);
             var shouldQuitReturns =
-                Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] {true}).GetEnumerator();
+                Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] { true }).GetEnumerator();
             var calls = 0;
             retryStrategy.Setup(s => s.ShouldQuit(It.IsAny<long>())).Returns<long>(attempt =>
             {

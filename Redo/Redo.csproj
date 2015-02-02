@@ -37,12 +37,15 @@
     <Compile Include="ExponentialDelayRetryStrategy.cs" />
     <Compile Include="LinearDelayRetryStrategy.cs" />
     <Compile Include="SimpleDelayRetryStrategy.cs" />
+    <Compile Include="TryActionAsync.cs" />
     <Compile Include="TryAction.cs" />
     <Compile Include="IRetryStrategy.cs" />
+    <Compile Include="TryConfigurable.cs" />
     <Compile Include="TryDefault.cs" />
     <Compile Include="TryConfiguration.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="Run.cs" />
+    <Compile Include="TryFunctionAsync.cs" />
     <Compile Include="TryFunction.cs" />
     <Compile Include="Try.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

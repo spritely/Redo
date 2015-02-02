@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 
 namespace Spritely.Redo
 {
     public static class TryDefault
     {
-        internal static object Lock = new object();
-        internal static ExceptionList handles;
+        private static readonly object Lock = new object();
+        private static ExceptionList handles;
         private static IRetryStrategy retryStrategy;
         private static ExceptionListener exceptionListeners;
         private static TimeSpan delay;
@@ -98,6 +99,24 @@ namespace Spritely.Redo
                 maxRetries = 30;
                 delay = TimeSpan.FromSeconds(1);
             }
+        }
+
+        internal static TryConfiguration NewConfiguration()
+        {
+            TryConfiguration configuration;
+            lock (Lock)
+            {
+                configuration = new TryConfiguration
+                {
+                    ExceptionListeners = ExceptionListeners,
+                    Handles = new ExceptionList(),
+                    RetryStrategy = RetryStrategy
+                };
+
+                handles.ToList().ForEach(h => configuration.Handles.Add(h));
+            }
+
+            return configuration;
         }
     }
 }

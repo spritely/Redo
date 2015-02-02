@@ -5,12 +5,13 @@ using Xunit;
 
 namespace Spritely.Redo.Test
 {
-    public class TryActionTest
+    // Most methods in this class have a near exact equivalent in TryFunctionTest
+    public class TryFunctionAsyncTest
     {
         [Fact]
         public void Running_throws_on_null_argument()
         {
-            Assert.Throws<ArgumentNullException>(() => Try.Running(null));
+            Assert.Throws<ArgumentNullException>(() => Try.RunningAsync(null as Func<object>));
         }
 
         // TryFunctionTest validates shared functional paths between TryAction and TryFunction.
@@ -18,63 +19,60 @@ namespace Spritely.Redo.Test
         [Fact]
         public void until_defaults_to_UntilExtension_Until()
         {
-            var tryAction = Try.Running(() => { });
+            var tryFunction = Try.RunningAsync(() => true);
 
-            Assert.Equal(Run.Until, tryAction.until);
+            Assert.Equal(Run.Until, tryFunction.until);
         }
 
         [Fact]
         public void Until_calls_until_with_expected_parameters()
         {
-            var fCalled = false;
-            var satisfiedCalled = false;
+            var expectedResult = new object();
+            Func<object, bool> expectedSatisfied = _ => true;
             var expectedConfiguration = new TryConfiguration();
 
+            Func<object, bool> actualSatisfied = null;
             TryConfiguration actualConfiguration = null;
 
-            var tryAction = Try.Running(() => { fCalled = true; });
+            var tryAction = Try.RunningAsync(() => expectedResult);
             tryAction.configuration = expectedConfiguration;
             tryAction.until = (f, satisfied, configuration) =>
             {
-                f();
-                satisfied(null);
+                actualSatisfied = satisfied;
                 actualConfiguration = configuration;
-                return null;
+                return f();
             };
 
-            tryAction.Until(() =>
-            {
-                satisfiedCalled = true;
-                return true;
-            });
+            var actualResult = tryAction.Until(expectedSatisfied);
+            actualResult.Wait();
 
-            Assert.True(fCalled);
-            Assert.True(satisfiedCalled);
+            Assert.Same(expectedResult, actualResult.Result);
+            Assert.Same(expectedSatisfied, actualSatisfied);
             Assert.Same(expectedConfiguration, actualConfiguration);
         }
 
         [Fact]
         public void Now_calls_until_with_expected_parameters()
         {
-            var fCalled = false;
+            var expectedResult = new object();
             var satisfiedCallResult = false;
             var expectedConfiguration = new TryConfiguration();
 
             TryConfiguration actualConfiguration = null;
 
-            var tryAction = Try.Running(() => { fCalled = true; });
+            var tryAction = Try.RunningAsync(() => expectedResult);
             tryAction.configuration = expectedConfiguration;
             tryAction.until = (f, satisfied, configuration) =>
             {
-                f();
                 satisfiedCallResult = satisfied(null);
                 actualConfiguration = configuration;
-                return null;
+                return f();
             };
 
-            tryAction.Now();
+            var actualResult = tryAction.Now();
+            actualResult.Wait();
 
-            Assert.True(fCalled);
+            Assert.Same(expectedResult, actualResult.Result);
             Assert.True(satisfiedCallResult);
             Assert.Same(expectedConfiguration, actualConfiguration);
         }
