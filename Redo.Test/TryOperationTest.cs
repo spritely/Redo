@@ -12,7 +12,7 @@ using Xunit;
 
 namespace Spritely.Redo.Test
 {
-    public class TryConfigurableTest
+    public class TryOperationTest
     {
         [Fact]
         public void With_sets_configuration_RetryStrategy()

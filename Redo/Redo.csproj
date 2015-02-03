@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Debug\Spritely.Redo.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <DocumentationFile>bin\Release\Spritely.Redo.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ExceptionList.cs" />
@@ -36,11 +40,11 @@
     <Compile Include="SafeDelay.cs" />
     <Compile Include="ExponentialDelayRetryStrategy.cs" />
     <Compile Include="LinearDelayRetryStrategy.cs" />
-    <Compile Include="SimpleDelayRetryStrategy.cs" />
+    <Compile Include="ConstantDelayRetryStrategy.cs" />
     <Compile Include="TryActionAsync.cs" />
     <Compile Include="TryAction.cs" />
     <Compile Include="IRetryStrategy.cs" />
-    <Compile Include="TryConfigurable.cs" />
+    <Compile Include="TryOperation.cs" />
     <Compile Include="TryDefault.cs" />
     <Compile Include="TryConfiguration.cs" />
     <Compile Include="Delegates.cs" />

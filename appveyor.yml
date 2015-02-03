@@ -1,4 +1,4 @@
-version: 0.0.{build}
+version: 0.1.{build}
 
 configuration:
   - Debug
@@ -12,10 +12,9 @@ nuget:
 
 build:
   publish_nuget: true
-  publish_nuget_symbols: true
   parallel: true
   verbosity: normal
 
 artifacts:
-  - path: ControlFlow\bin\Debug
-  - path: ControlFlow\bin\Release
+  - path: Redo\bin\Debug
+  - path: Redo\bin\Release

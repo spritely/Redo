@@ -10,6 +10,9 @@ using System.Linq;
 
 namespace Spritely.Redo
 {
+    /// <summary>
+    ///     Container for all try operation default configuration options.
+    /// </summary>
     public static class TryDefault
     {
         private static readonly object Lock = new object();
@@ -19,6 +22,12 @@ namespace Spritely.Redo
         private static TimeSpan delay;
         private static int maxRetries;
 
+        /// <summary>
+        ///     Gets or sets the default delay for new retry operations.
+        /// </summary>
+        /// <value>
+        ///     The default delay.
+        /// </value>
         public static TimeSpan Delay
         {
             get { return delay; }
@@ -31,6 +40,12 @@ namespace Spritely.Redo
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the default maximum retries for new retry operations.
+        /// </summary>
+        /// <value>
+        ///     The default maximum retries.
+        /// </value>
         public static int MaxRetries
         {
             get { return maxRetries; }
@@ -43,6 +58,12 @@ namespace Spritely.Redo
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the default retry strategy for new retry operations.
+        /// </summary>
+        /// <value>
+        ///     The retry strategy.
+        /// </value>
         public static IRetryStrategy RetryStrategy
         {
             get { return retryStrategy; }
@@ -50,11 +71,17 @@ namespace Spritely.Redo
             {
                 lock (Lock)
                 {
-                    retryStrategy = value ?? new SimpleDelayRetryStrategy();
+                    retryStrategy = value ?? new ConstantDelayRetryStrategy();
                 }
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the default exception listeners for new retry operations.
+        /// </summary>
+        /// <value>
+        ///     The default exception listeners.
+        /// </value>
         public static ExceptionListener ExceptionListeners
         {
             get { return exceptionListeners; }
@@ -72,6 +99,10 @@ namespace Spritely.Redo
             Reset();
         }
 
+        /// <summary>
+        ///     Adds a default exception handler for new retry operations.
+        /// </summary>
+        /// <typeparam name="T">The type of exception to handle.</typeparam>
         public static void AddHandle<T>() where T : Exception
         {
             lock (Lock)
@@ -80,6 +111,10 @@ namespace Spritely.Redo
             }
         }
 
+        /// <summary>
+        ///     Removes a default exception handler for new retry operations.
+        /// </summary>
+        /// <typeparam name="T">The type of exception to remove.</typeparam>
         public static void RemoveHandle<T>() where T : Exception
         {
             lock (Lock)
@@ -88,7 +123,11 @@ namespace Spritely.Redo
             }
         }
 
-        public static void ResetHandles<T>() where T : Exception
+        /// <summary>
+        ///     Resets the default exception handlers for new operations to an empty list which if left unspecified will result in
+        ///     all exceptions being handled.
+        /// </summary>
+        public static void ResetHandles()
         {
             lock (Lock)
             {
@@ -96,11 +135,14 @@ namespace Spritely.Redo
             }
         }
 
+        /// <summary>
+        ///     Resets all defaults back to their pre-defined values.
+        /// </summary>
         public static void Reset()
         {
             lock (Lock)
             {
-                retryStrategy = new SimpleDelayRetryStrategy();
+                retryStrategy = new ConstantDelayRetryStrategy();
                 exceptionListeners = ex => { };
                 handles = new ExceptionList();
                 maxRetries = 30;

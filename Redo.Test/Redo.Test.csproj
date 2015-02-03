@@ -60,8 +60,8 @@
     <Compile Include="ExponentialDelayRetryStrategyTest.cs" />
     <Compile Include="ProgressiveDelayRetryStrategyTest.cs" />
     <Compile Include="LinearDelayRetryStrategyTest.cs" />
-    <Compile Include="SimpleDelayRetryStrategyTest.cs" />
-    <Compile Include="TryConfigurableTest.cs" />
+    <Compile Include="ConstantDelayRetryStrategyTest.cs" />
+    <Compile Include="TryOperationTest.cs" />
     <Compile Include="TryFunctionAsyncTest.cs" />
     <Compile Include="TryActionAsyncTest.cs" />
     <Compile Include="TryTest.cs" />

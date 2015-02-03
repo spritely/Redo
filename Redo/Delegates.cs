@@ -9,5 +9,9 @@ using System;
 
 namespace Spritely.Redo
 {
-    public delegate void ExceptionListener(Exception ex);
+    /// <summary>
+    ///     Interface for reporting exceptions that occur during retry handling.
+    /// </summary>
+    /// <param name="exception">The exception.</param>
+    public delegate void ExceptionListener(Exception exception);
 }

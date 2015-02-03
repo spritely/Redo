@@ -11,7 +11,7 @@ using Xunit;
 
 namespace Spritely.Redo.Test
 {
-    public class SimpleDelayRetryStrategyTest
+    public class ConstantDelayRetryStrategyTest
     {
         private readonly Random random = new Random();
 
@@ -20,7 +20,7 @@ namespace Spritely.Redo.Test
         {
             var expectedMaxRetries = this.random.Next();
             var expectedDelay = TimeSpan.FromMilliseconds(this.random.Next());
-            var retryStrategy = new SimpleDelayRetryStrategy(expectedMaxRetries, expectedDelay);
+            var retryStrategy = new ConstantDelayRetryStrategy(expectedMaxRetries, expectedDelay);
 
             Assert.Equal(expectedMaxRetries, retryStrategy.MaxRetries);
             Assert.Equal(expectedDelay, retryStrategy.Delay);
@@ -29,7 +29,7 @@ namespace Spritely.Redo.Test
         [Fact]
         public void Constructor_assigns_default_properties()
         {
-            var retryStrategy = new SimpleDelayRetryStrategy();
+            var retryStrategy = new ConstantDelayRetryStrategy();
 
             Assert.Equal(TryDefault.MaxRetries, retryStrategy.MaxRetries);
             Assert.Equal(TryDefault.Delay, retryStrategy.Delay);
@@ -38,7 +38,7 @@ namespace Spritely.Redo.Test
         [Fact]
         public void ShouldQuit_returns_false_when_attempt_less_than_or_equal_maxretries()
         {
-            var retryStrategy = new SimpleDelayRetryStrategy();
+            var retryStrategy = new ConstantDelayRetryStrategy();
 
             Assert.False(retryStrategy.ShouldQuit(TryDefault.MaxRetries - 1));
             Assert.False(retryStrategy.ShouldQuit(TryDefault.MaxRetries));
@@ -47,7 +47,7 @@ namespace Spritely.Redo.Test
         [Fact]
         public void ShouldQuit_returns_true_when_attempt_greater_than_maxretries()
         {
-            var retryStrategy = new SimpleDelayRetryStrategy();
+            var retryStrategy = new ConstantDelayRetryStrategy();
 
             Assert.True(retryStrategy.ShouldQuit(TryDefault.MaxRetries + 1));
         }
@@ -56,7 +56,7 @@ namespace Spritely.Redo.Test
         public void Wait_calls_calculate_with_Delay()
         {
             var wasCalled = false;
-            var retryStrategy = new SimpleDelayRetryStrategy();
+            var retryStrategy = new ConstantDelayRetryStrategy();
             retryStrategy.Delay = TimeSpan.FromMilliseconds(this.random.Next(1, int.MaxValue));
 
             retryStrategy.calculateSleepTime = delay =>
@@ -73,7 +73,7 @@ namespace Spritely.Redo.Test
         [Fact]
         public void Wait_sleeps_for_the_time_returned_from_calculateSleepTime()
         {
-            var retryStrategy = new SimpleDelayRetryStrategy();
+            var retryStrategy = new ConstantDelayRetryStrategy();
 
             // This will cause a delay in test execution - keep value tiny
             retryStrategy.calculateSleepTime = _ => TimeSpan.FromMilliseconds(50);
@@ -92,7 +92,7 @@ namespace Spritely.Redo.Test
         {
             var expectedDelay = TimeSpan.FromMilliseconds(this.random.Next(1, int.MaxValue));
 
-            var actualDelay = SimpleDelayRetryStrategy.CalculateSleepTime(expectedDelay);
+            var actualDelay = ConstantDelayRetryStrategy.CalculateSleepTime(expectedDelay);
 
             Assert.Equal(expectedDelay, actualDelay);
         }
@@ -100,7 +100,7 @@ namespace Spritely.Redo.Test
         [Fact]
         public void CalculateSleepTime_ensures_delay_is_at_least_1()
         {
-            var actualDelay = SimpleDelayRetryStrategy.CalculateSleepTime(TimeSpan.Zero);
+            var actualDelay = ConstantDelayRetryStrategy.CalculateSleepTime(TimeSpan.Zero);
 
             Assert.Equal(1, actualDelay.TotalMilliseconds);
         }

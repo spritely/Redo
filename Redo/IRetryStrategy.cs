@@ -7,9 +7,22 @@
 
 namespace Spritely.Redo
 {
+    /// <summary>
+    ///     A strategy for retrying operations.
+    /// </summary>
     public interface IRetryStrategy
     {
+        /// <summary>
+        ///     A retryable operation calls this method to determine if it should quit.
+        /// </summary>
+        /// <param name="attempt">The attempt.</param>
+        /// <returns>true if operation should be cancelled, false otherwise.</returns>
         bool ShouldQuit(long attempt);
-        void Wait(long attampt);
+
+        /// <summary>
+        ///     A retryable operation calls this method to introduce wait time before retrying again.
+        /// </summary>
+        /// <param name="attempt">The attempt.</param>
+        void Wait(long attempt);
     }
 }

@@ -73,28 +73,30 @@ namespace Spritely.Redo.Test
         }
 
         [Fact]
-        public void Now_calls_until_with_expected_parameters()
+        public void UntilNotNull_calls_until_with_expected_parameters()
         {
             var expectedResult = new object();
-            var satisfiedCallResult = false;
             var expectedConfiguration = new TryConfiguration();
 
+            Func<object, bool> actualSatisfied = null;
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.Running(() => expectedResult);
             tryAction.configuration = expectedConfiguration;
             tryAction.until = (f, satisfied, configuration) =>
             {
-                satisfiedCallResult = satisfied(null);
+                actualSatisfied = satisfied;
                 actualConfiguration = configuration;
                 return f();
             };
 
-            var actualResult = tryAction.Now();
+            var actualResult = tryAction.UntilNotNull();
 
             Assert.Same(expectedResult, actualResult);
-            Assert.True(satisfiedCallResult);
             Assert.Same(expectedConfiguration, actualConfiguration);
+            Assert.False(actualSatisfied(null));
+            Assert.True(actualSatisfied(new object()));
+            Assert.True(actualSatisfied(1));
         }
 
         [Fact]

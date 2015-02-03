@@ -57,31 +57,5 @@ namespace Spritely.Redo.Test
             Assert.True(satisfiedCalled);
             Assert.Same(expectedConfiguration, actualConfiguration);
         }
-
-        [Fact]
-        public void Now_calls_until_with_expected_parameters()
-        {
-            var fCalled = false;
-            var satisfiedCallResult = false;
-            var expectedConfiguration = new TryConfiguration();
-
-            TryConfiguration actualConfiguration = null;
-
-            var tryAction = Try.Running(() => { fCalled = true; });
-            tryAction.configuration = expectedConfiguration;
-            tryAction.until = (f, satisfied, configuration) =>
-            {
-                f();
-                satisfiedCallResult = satisfied(null);
-                actualConfiguration = configuration;
-                return null;
-            };
-
-            tryAction.Now();
-
-            Assert.True(fCalled);
-            Assert.True(satisfiedCallResult);
-            Assert.Same(expectedConfiguration, actualConfiguration);
-        }
     }
 }
