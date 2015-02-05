@@ -21,9 +21,9 @@ nuget:
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
-  assembly_version: '$(semantic_version).0'
+  assembly_version: '$(semantic_version).{build}'
   assembly_file_version: '$(semantic_version).{build}'
-  assembly_informational_version: '$(semantic_version)-$(APPVEYOR_REPO_COMMIT)'
+  assembly_informational_version: '$(semantic_version)'
 
 build:
   publish_nuget: true
