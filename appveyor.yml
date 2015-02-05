@@ -1,4 +1,4 @@
-version: 0.1.{build}
+version: 0.1.0
 
 configuration:
   - Debug
@@ -10,11 +10,14 @@ install:
 nuget:
   disable_publish_on_pr: true
 
+assembly_info:
+  patch: true
+  file: '**\AssemblyInfo.*'
+  assembly_version: '{version}'
+  assembly_file_version: '{version}'
+  assembly_informational_version: '{version}-$(APPVEYOR_REPO_COMMIT)'
+
 build:
   publish_nuget: true
   parallel: true
   verbosity: normal
-
-artifacts:
-  - path: Redo\bin\Debug
-  - path: Redo\bin\Release
