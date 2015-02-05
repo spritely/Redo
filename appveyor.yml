@@ -15,7 +15,7 @@ assembly_info:
   file: '**\AssemblyInfo.*'
   assembly_version: '{version}'
   assembly_file_version: '{version}'
-  assembly_informational_version: '{version}-$(APPVEYOR_REPO_COMMIT)'
+  assembly_informational_version: '{version}.0-$(APPVEYOR_REPO_COMMIT)'
 
 build:
   publish_nuget: true
