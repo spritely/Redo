@@ -9,8 +9,8 @@ environment:
   semantic_version: 0.1.0
 
 configuration:
-  - Debug
   - Release
+  - Debug
 
 install:
   - nuget restore
@@ -21,7 +21,7 @@ nuget:
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
-  assembly_version: '$(semantic_version).{build}'
+  assembly_version: '$(semantic_version).0'
   assembly_file_version: '$(semantic_version).{build}'
   assembly_informational_version: '$(semantic_version)-$(APPVEYOR_REPO_COMMIT)'
 
