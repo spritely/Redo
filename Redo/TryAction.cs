@@ -20,16 +20,16 @@ namespace Spritely.Redo
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryAction" /> class.
         /// </summary>
-        /// <param name="f">The action to call with retries.</param>
+        /// <param name="action">The action to call with retries.</param>
         /// <exception cref="System.ArgumentNullException">f;Running requires a valid function to call.</exception>
-        public TryAction(Action f)
+        public TryAction(Action action)
         {
-            if (f == null)
+            if (action == null)
             {
-                throw new ArgumentNullException("f", "Running requires a valid function to call.");
+                throw new ArgumentNullException("action", "Running requires a valid function to call.");
             }
 
-            this.f = f;
+            this.f = action;
         }
 
         /// <summary>
@@ -40,13 +40,13 @@ namespace Spritely.Redo
         public void Until(Func<bool> satisfied)
         {
             // Converting Action into a Func<object> so Run logic can be shared
-            Func<object> f = () =>
+            Func<object> function = () =>
             {
                 this.f();
                 return null;
             };
 
-            this.until(f, _ => satisfied(), this.configuration);
+            this.until(function, _ => satisfied(), this.configuration);
         }
     }
 }

@@ -5,26 +5,27 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using Xunit;
-
 namespace Spritely.Redo.Test
 {
+    using NUnit.Framework;
+
+    [TestFixture]
     public class TryTest
     {
-        [Fact]
+        [Test]
         public void Running_returns_a_TryAction_when_an_action_is_passed()
         {
             var actual = Try.Running(() => { });
 
-            Assert.IsType<TryAction>(actual);
+            Assert.That(actual, Is.InstanceOf<TryAction>());
         }
 
-        [Fact]
+        [Test]
         public void Running_returns_a_TryFunction_when_a_function_is_passed()
         {
             var actual = Try.Running(() => new object());
 
-            Assert.IsType<TryFunction<object>>(actual);
+            Assert.That(actual, Is.InstanceOf<TryFunction<object>>());
         }
     }
 }

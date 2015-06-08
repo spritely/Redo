@@ -1,18 +1,22 @@
-# {build} is required by AppVeyor to uniquely idenify its builds on the url
+# {build} is required by AppVeyor to uniquely identify its builds on the url
 # It is a continuously incrementing number so when used it violates the reset
 # smaller build parts rule of semantic versioning. Therefore we introduce a
-# second environment variable semantic_version. It sets the actual assembly
-# versions, but should always be kept in sync with main version number.
-version: 0.1.0.{build}
+# second environment variable semantic_version.
+version: 0.2.0.{build}
 
 environment:
-  semantic_version: 0.1.0
+  RunCodeAnalysis: true
 
 configuration:
-  - Release
   - Debug
+  - Release
+
+cache:
+  - packages -> **\packages.config
 
 install:
+  - set semantic_version=%APPVEYOR_BUILD_VERSION:~0,5%
+  - echo Version - %semantic_version%
   - nuget restore
 
 nuget:
@@ -26,6 +30,20 @@ assembly_info:
   assembly_informational_version: '$(semantic_version)'
 
 build:
-  publish_nuget: true
+  project: Build.proj
   parallel: true
   verbosity: normal
+
+after_test:
+  - nuget pack "%APPVEYOR_BUILD_FOLDER%\Redo\Redo.nuspec" -BasePath "%APPVEYOR_BUILD_FOLDER%\Redo\bin\%configuration%" -Properties "Configuration=%configuration%;Platform=%platform%;Version=%semantic_version%" -OutputDirectory "%TEMP%" -Verbosity detailed
+  - appveyor PushArtifact "%TEMP%\Spritely.Redo.%semantic_version%.nupkg"
+
+deploy:
+  - provider: NuGet
+    on:
+      branch: master
+      configuration: Release
+    api_key:
+      secure: dUMLXnYuqF7ORswtDCtj2XgKlpLMKrXZrq9m/FEN2xu0vTClejXqADyxMEawTs2W
+    skip_symbols: true
+    artifact: /.*\.nupkg/

@@ -5,17 +5,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Diagnostics;
-using Xunit;
-
 namespace Spritely.Redo.Test
 {
+    using System;
+    using System.Diagnostics;
+    using NUnit.Framework;
+
+    [TestFixture]
     public class LinearDelayRetryStrategyTest
     {
         private readonly Random random = new Random();
 
-        [Fact]
+        [Test]
         public void Constructor_assigns_arguments_to_properties()
         {
             var expectedScaleFactor = this.random.NextDouble();
@@ -23,40 +24,40 @@ namespace Spritely.Redo.Test
             var expectedDelay = TimeSpan.FromMilliseconds(this.random.Next());
             var retryStrategy = new LinearDelayRetryStrategy(expectedScaleFactor, expectedMaxRetries, expectedDelay);
 
-            Assert.Equal(expectedScaleFactor, retryStrategy.ScaleFactor);
-            Assert.Equal(expectedMaxRetries, retryStrategy.MaxRetries);
-            Assert.Equal(expectedDelay, retryStrategy.Delay);
+            Assert.That(retryStrategy.ScaleFactor, Is.EqualTo(expectedScaleFactor));
+            Assert.That(retryStrategy.MaxRetries, Is.EqualTo(expectedMaxRetries));
+            Assert.That(retryStrategy.Delay, Is.EqualTo(expectedDelay));
         }
 
-        [Fact]
+        [Test]
         public void Constructor_assigns_default_properties()
         {
             var expectedScaleFactor = this.random.NextDouble();
             var retryStrategy = new LinearDelayRetryStrategy(expectedScaleFactor);
 
-            Assert.Equal(expectedScaleFactor, retryStrategy.ScaleFactor);
-            Assert.Equal(TryDefault.MaxRetries, retryStrategy.MaxRetries);
-            Assert.Equal(TryDefault.Delay, retryStrategy.Delay);
+            Assert.That(retryStrategy.ScaleFactor, Is.EqualTo(expectedScaleFactor));
+            Assert.That(retryStrategy.MaxRetries, Is.EqualTo(TryDefault.MaxRetries));
+            Assert.That(retryStrategy.Delay, Is.EqualTo(TryDefault.Delay));
         }
 
-        [Fact]
-        public void ShouldQuit_returns_false_when_attempt_less_than_or_equal_maxretries()
+        [Test]
+        public void ShouldQuit_returns_false_when_attempt_less_than_or_equal_MaxRetries()
         {
             var retryStrategy = new LinearDelayRetryStrategy(1);
 
-            Assert.False(retryStrategy.ShouldQuit(TryDefault.MaxRetries - 1));
-            Assert.False(retryStrategy.ShouldQuit(TryDefault.MaxRetries));
+            Assert.That(retryStrategy.ShouldQuit(TryDefault.MaxRetries - 1), Is.False);
+            Assert.That(retryStrategy.ShouldQuit(TryDefault.MaxRetries), Is.False);
         }
 
-        [Fact]
-        public void ShouldQuit_returns_true_when_attempt_greater_than_maxretries()
+        [Test]
+        public void ShouldQuit_returns_true_when_attempt_greater_than_MaxRetries()
         {
             var retryStrategy = new LinearDelayRetryStrategy(1);
 
-            Assert.True(retryStrategy.ShouldQuit(TryDefault.MaxRetries + 1));
+            Assert.That(retryStrategy.ShouldQuit(TryDefault.MaxRetries + 1), Is.True);
         }
 
-        [Fact]
+        [Test]
         public void Wait_calls_calculate_with_expected_values()
         {
             var wasCalled = false;
@@ -68,17 +69,19 @@ namespace Spritely.Redo.Test
             retryStrategy.calculateSleepTime = (attempt, delay, scaleFactor) =>
             {
                 wasCalled = true;
-                Assert.Equal(expectedAttempt, attempt);
-                Assert.Equal(retryStrategy.Delay, delay);
-                Assert.Equal(expectedScaleFactor, scaleFactor);
+
+                Assert.That(attempt, Is.EqualTo(expectedAttempt));
+                Assert.That(delay, Is.EqualTo(retryStrategy.Delay));
+                Assert.That(scaleFactor, Is.EqualTo(expectedScaleFactor));
+
                 return TimeSpan.FromMilliseconds(1); // This will cause a delay in test execution - keep value tiny
             };
 
             retryStrategy.Wait(expectedAttempt);
-            Assert.True(wasCalled);
+            Assert.That(wasCalled, Is.True);
         }
 
-        [Fact]
+        [Test]
         public void Wait_sleeps_for_the_time_returned_from_calculateSleepTime()
         {
             var retryStrategy = new LinearDelayRetryStrategy(1);
@@ -92,26 +95,26 @@ namespace Spritely.Redo.Test
 
             // Stopwatch is pretty accurate, but test has possibility of other system delays introducing extra
             // delays and 50 milliseconds is pretty tiny so being generous on the high side
-            Assert.InRange(stopWatch.ElapsedMilliseconds, 50, 100);
+            Assert.That(stopWatch.ElapsedMilliseconds, Is.InRange(50, 100));
         }
 
-        [Fact]
+        [Test]
         public void CalculateSleepTime_returns_expected_delays()
         {
             var delay = TimeSpan.FromMilliseconds(10);
 
-            Assert.Equal(10, LinearDelayRetryStrategy.CalculateSleepTime(1, delay, 10).TotalMilliseconds);
-            Assert.Equal(20, LinearDelayRetryStrategy.CalculateSleepTime(2, delay, 10).TotalMilliseconds);
-            Assert.Equal(30, LinearDelayRetryStrategy.CalculateSleepTime(3, delay, 10).TotalMilliseconds);
-            Assert.Equal(100, LinearDelayRetryStrategy.CalculateSleepTime(10, delay, 10).TotalMilliseconds);
+            Assert.That(LinearDelayRetryStrategy.CalculateSleepTime(1, delay, 10).TotalMilliseconds, Is.EqualTo(10));
+            Assert.That(LinearDelayRetryStrategy.CalculateSleepTime(2, delay, 10).TotalMilliseconds, Is.EqualTo(20));
+            Assert.That(LinearDelayRetryStrategy.CalculateSleepTime(3, delay, 10).TotalMilliseconds, Is.EqualTo(30));
+            Assert.That(LinearDelayRetryStrategy.CalculateSleepTime(10, delay, 10).TotalMilliseconds, Is.EqualTo(100));
         }
 
-        [Fact]
+        [Test]
         public void CalculateSleepTime_ensures_delay_is_at_least_1()
         {
             var actualDelay = LinearDelayRetryStrategy.CalculateSleepTime(1, TimeSpan.Zero, -1);
 
-            Assert.Equal(1, actualDelay.TotalMilliseconds);
+            Assert.That(actualDelay.TotalMilliseconds, Is.EqualTo(1));
         }
     }
 }

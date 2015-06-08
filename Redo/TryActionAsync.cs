@@ -21,16 +21,16 @@ namespace Spritely.Redo
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryActionAsync" /> class.
         /// </summary>
-        /// <param name="f">The action to call with retries.</param>
+        /// <param name="action">The action to call with retries.</param>
         /// <exception cref="System.ArgumentNullException">f;Running requires a valid function to call.</exception>
-        public TryActionAsync(Action f)
+        public TryActionAsync(Action action)
         {
-            if (f == null)
+            if (action == null)
             {
-                throw new ArgumentNullException("f", "Running requires a valid function to call.");
+                throw new ArgumentNullException("action", "Running requires a valid function to call.");
             }
 
-            this.f = f;
+            this.f = action;
         }
 
         /// <summary>

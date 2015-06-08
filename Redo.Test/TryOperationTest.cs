@@ -5,16 +5,17 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using Moq;
-using Xunit;
-
 namespace Spritely.Redo.Test
 {
+    using System;
+    using System.Linq;
+    using Moq;
+    using NUnit.Framework;
+
+    [TestFixture]
     public class TryOperationTest
     {
-        [Fact]
+        [Test]
         public void With_sets_configuration_RetryStrategy()
         {
             var tryAction = Try.Running(() => { });
@@ -25,10 +26,10 @@ namespace Spritely.Redo.Test
 
             tryAction.With(retryStrategy.Object);
 
-            Assert.Same(retryStrategy.Object, configuration.RetryStrategy);
+            Assert.That(configuration.RetryStrategy, Is.SameAs(retryStrategy.Object));
         }
 
-        [Fact]
+        [Test]
         public void Report_adds_value_to_configuration_ExceptionListeners()
         {
             var tryAction = Try.Running(() => { });
@@ -39,19 +40,20 @@ namespace Spritely.Redo.Test
 
             tryAction.configuration.ExceptionListeners(expectedException);
 
-            Assert.Same(expectedException, actualException);
+            Assert.That(actualException, Is.SameAs(expectedException));
         }
 
-        [Fact]
+        [Test]
         public void Handle_adds_exception_to_configuration_Handles()
         {
             var tryAction = Try.Running(() => { });
 
             tryAction.Handle<TestException>();
 
-            Assert.True(tryAction.configuration.Handles.Contains(typeof(TestException)));
+            Assert.That(tryAction.configuration.Handles.Contains(typeof(TestException)), Is.True);
         }
 
+        [Serializable]
         private class TestException : Exception
         {
         }

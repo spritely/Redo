@@ -5,16 +5,18 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-using Moq;
-using Xunit;
-
 namespace Spritely.Redo.Test
 {
-    public class TryFunctionTest : IDisposable
+    using System;
+    using System.Linq;
+    using Moq;
+    using NUnit.Framework;
+
+    [TestFixture]
+    public class TryFunctionTest
     {
-        public TryFunctionTest()
+        [SetUp]
+        public void Initialize()
         {
             // Replace the default retry strategy with a test instance that doesn't delay and quits after 50 tries
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -25,12 +27,13 @@ namespace Spritely.Redo.Test
             TryDefault.RetryStrategy = retryStrategy.Object;
         }
 
-        public void Dispose()
+        [TearDown]
+        public void Cleanup()
         {
             TryDefault.Reset();
         }
 
-        [Fact]
+        [Test]
         public void Running_throws_on_null_argument()
         {
             Assert.Throws<ArgumentNullException>(() => Try.Running(null as Func<object>));
@@ -38,15 +41,15 @@ namespace Spritely.Redo.Test
 
         // TryFunctionTest validates shared functional paths between TryAction and TryFunction.
         // These next two methods ensure the TryFunction methods call the same underlying functionality.
-        [Fact]
+        [Test]
         public void until_defaults_to_UntilExtension_Until()
         {
             var tryFunction = Try.Running(() => true);
 
-            Assert.Equal(Run.Until, tryFunction.until);
+            Assert.That(tryFunction.until == Run.Until);
         }
 
-        [Fact]
+        [Test]
         public void Until_calls_until_with_expected_parameters()
         {
             var expectedResult = new object();
@@ -67,12 +70,12 @@ namespace Spritely.Redo.Test
 
             var actualResult = tryAction.Until(expectedSatisfied);
 
-            Assert.Same(expectedResult, actualResult);
-            Assert.Same(expectedSatisfied, actualSatisfied);
-            Assert.Same(expectedConfiguration, actualConfiguration);
+            Assert.That(actualResult, Is.SameAs(expectedResult));
+            Assert.That(actualSatisfied, Is.SameAs(expectedSatisfied));
+            Assert.That(actualConfiguration, Is.SameAs(expectedConfiguration));
         }
 
-        [Fact]
+        [Test]
         public void UntilNotNull_calls_until_with_expected_parameters()
         {
             var expectedResult = new object();
@@ -92,14 +95,14 @@ namespace Spritely.Redo.Test
 
             var actualResult = tryAction.UntilNotNull();
 
-            Assert.Same(expectedResult, actualResult);
-            Assert.Same(expectedConfiguration, actualConfiguration);
-            Assert.False(actualSatisfied(null));
-            Assert.True(actualSatisfied(new object()));
-            Assert.True(actualSatisfied(1));
+            Assert.That(actualResult, Is.SameAs(expectedResult));
+            Assert.That(actualConfiguration, Is.SameAs(expectedConfiguration));
+            Assert.That(actualSatisfied(null), Is.False);
+            Assert.That(actualSatisfied(new object()), Is.True);
+            Assert.That(actualSatisfied(1), Is.True);
         }
 
-        [Fact]
+        [Test]
         public void Until_uses_default_retry_strategy()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -117,7 +120,7 @@ namespace Spritely.Redo.Test
             retryStrategy.Verify(s => s.Wait(It.IsAny<long>()), Times.AtLeastOnce);
         }
 
-        [Fact]
+        [Test]
         public void With_sets_the_retry_strategy()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -135,7 +138,7 @@ namespace Spritely.Redo.Test
             retryStrategy.Verify(s => s.Wait(It.IsAny<long>()), Times.AtLeastOnce);
         }
 
-        [Fact]
+        [Test]
         public void RetryStrategy_Wait_is_called_with_current_1_based_attempt_value()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -150,7 +153,7 @@ namespace Spritely.Redo.Test
             retryStrategy.Verify();
         }
 
-        [Fact]
+        [Test]
         public void Until_returns_result_of_successful_call()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -160,10 +163,10 @@ namespace Spritely.Redo.Test
                 .With(retryStrategy.Object)
                 .Until(_ => true);
 
-            Assert.Same(expected, actual);
+            Assert.That(actual, Is.SameAs(expected));
         }
 
-        [Fact]
+        [Test]
         public void Until_retries_until_Until_returns_true()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -178,18 +181,16 @@ namespace Spritely.Redo.Test
                 .With(retryStrategy.Object)
                 .Until(_ => untilReturns[calls++]);
 
-            Assert.Equal(falseCount + 1, calls);
+            Assert.That(calls, Is.EqualTo(falseCount + 1));
         }
 
-        [Fact]
+        [Test]
         public void Until_retries_until_ShouldQuit_returns_true()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
 
             // false, false, false...., true
             var falseCount = new Random().Next(2, 10);
-            var shouldQuitReturns =
-                Enumerable.Range(0, falseCount).Select(i => false).Concat(new[] { true }).GetEnumerator();
             var calls = 0;
             retryStrategy.Setup(s => s.ShouldQuit(It.IsAny<long>())).Returns<long>(attempt =>
             {
@@ -204,10 +205,10 @@ namespace Spritely.Redo.Test
                     .With(retryStrategy.Object)
                     .Until(_ => times++ >= (falseCount + 2))); // No infinite loop on test failure
 
-            Assert.Equal(falseCount + 1, calls);
+            Assert.That(calls, Is.EqualTo(falseCount + 1));
         }
 
-        [Fact]
+        [Test]
         public void Wait_is_not_called_after_ShouldQuit_returns_true()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -223,7 +224,7 @@ namespace Spritely.Redo.Test
             retryStrategy.Verify(s => s.Wait(It.IsAny<long>()), Times.Never);
         }
 
-        [Fact]
+        [Test]
         public void Wait_is_not_called_when_Until_returns_true()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -235,7 +236,8 @@ namespace Spritely.Redo.Test
             retryStrategy.Verify(s => s.Wait(It.IsAny<long>()), Times.Never);
         }
 
-        [Fact]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "Verifying the system handles any Exception type including the base Exception type.")]
+        [Test]
         public void Until_rethrows_original_exception_when_ShouldQuit_returns_true()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -252,11 +254,11 @@ namespace Spritely.Redo.Test
             }
             catch (Exception actualException)
             {
-                Assert.Same(expectedException, actualException);
+                Assert.That(actualException, Is.SameAs(expectedException));
             }
         }
 
-        [Fact]
+        [Test]
         public void Until_reports_exceptions_to_default_delegates()
         {
             var expectedException = new Exception();
@@ -266,10 +268,10 @@ namespace Spritely.Redo.Test
             Try.Running<object>(() => { throw expectedException; })
                 .Until(_ => true);
 
-            Assert.Same(expectedException, actualException);
+            Assert.That(actualException, Is.SameAs(expectedException));
         }
 
-        [Fact]
+        [Test]
         public void Until_reports_exceptions_to_call_specific_delegates()
         {
             var expectedException = new Exception();
@@ -279,17 +281,17 @@ namespace Spritely.Redo.Test
                 .Report(ex => actualException = ex)
                 .Until(_ => true);
 
-            Assert.Same(expectedException, actualException);
+            Assert.That(actualException, Is.SameAs(expectedException));
         }
 
-        [Fact]
+        [Test]
         public void Until_defaults_to_handling_Exception_when_no_default_handlers_specified()
         {
             Try.Running<object>(() => { throw new Exception(); })
                 .Until(_ => true);
         }
 
-        [Fact]
+        [Test]
         public void Until_uses_default_exception_handler_when_Handle_not_called()
         {
             TryDefault.AddHandle<TestException1>();
@@ -302,7 +304,7 @@ namespace Spritely.Redo.Test
                     .Until(_ => true));
         }
 
-        [Fact]
+        [Test]
         public void Until_handles_exceptions_specified_with_Handle()
         {
             Try.Running<object>(() => { throw new TestException1(); })
@@ -310,7 +312,7 @@ namespace Spritely.Redo.Test
                 .Until(_ => true);
         }
 
-        [Fact]
+        [Test]
         public void Until_propagates_exceptions_not_specified_with_Handle()
         {
             Assert.Throws<Exception>(() =>
@@ -319,7 +321,7 @@ namespace Spritely.Redo.Test
                     .Until(_ => true));
         }
 
-        [Fact]
+        [Test]
         public void Until_handles_multiple_exception_types_specified_with_Handle()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -340,7 +342,7 @@ namespace Spritely.Redo.Test
                 .Until(_ => i++ >= 2);
         }
 
-        [Fact]
+        [Test]
         public void Until_propagates_exceptions_not_specified_with_multiple_Handle_calls()
         {
             var retryStrategy = new Mock<IRetryStrategy>();
@@ -362,14 +364,17 @@ namespace Spritely.Redo.Test
                     .Until(_ => i++ >= 2));
         }
 
+        [Serializable]
         private class TestException1 : Exception
         {
         }
 
+        [Serializable]
         private class TestException2 : Exception
         {
         }
 
+        [Serializable]
         private class TestException3 : Exception
         {
         }

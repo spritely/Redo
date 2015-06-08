@@ -5,14 +5,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using Xunit;
-
 namespace Spritely.Redo.Test
 {
+    using System;
+    using NUnit.Framework;
+
+    [TestFixture]
     public class TryActionTest
     {
-        [Fact]
+        [Test]
         public void Running_throws_on_null_argument()
         {
             Assert.Throws<ArgumentNullException>(() => Try.Running(null));
@@ -20,15 +21,15 @@ namespace Spritely.Redo.Test
 
         // TryFunctionTest validates shared functional paths between TryAction and TryFunction.
         // These next two methods ensure the TryAction methods call the same underlying functionality.
-        [Fact]
+        [Test]
         public void until_defaults_to_UntilExtension_Until()
         {
             var tryAction = Try.Running(() => { });
 
-            Assert.Equal(Run.Until, tryAction.until);
+            Assert.That(tryAction.until == Run.Until);
         }
 
-        [Fact]
+        [Test]
         public void Until_calls_until_with_expected_parameters()
         {
             var fCalled = false;
@@ -53,9 +54,9 @@ namespace Spritely.Redo.Test
                 return true;
             });
 
-            Assert.True(fCalled);
-            Assert.True(satisfiedCalled);
-            Assert.Same(expectedConfiguration, actualConfiguration);
+            Assert.That(fCalled, Is.True);
+            Assert.That(satisfiedCalled, Is.True);
+            Assert.That(actualConfiguration, Is.EqualTo(expectedConfiguration));
         }
     }
 }

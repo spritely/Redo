@@ -35,7 +35,7 @@
     <DocumentationFile>bin\Release\Spritely.Redo.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ExceptionList.cs" />
+    <Compile Include="ExceptionCollection.cs" />
     <Compile Include="ProgressiveDelayRetryStrategy.cs" />
     <Compile Include="SafeDelay.cs" />
     <Compile Include="ExponentialDelayRetryStrategy.cs" />

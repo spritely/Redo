@@ -5,15 +5,16 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using Xunit;
-
 namespace Spritely.Redo.Test
 {
+    using System;
+    using NUnit.Framework;
+
     // Most methods in this class have a near exact equivalent in TryFunctionTest
+    [TestFixture]
     public class TryFunctionAsyncTest
     {
-        [Fact]
+        [Test]
         public void Running_throws_on_null_argument()
         {
             Assert.Throws<ArgumentNullException>(() => Try.RunningAsync(null as Func<object>));
@@ -21,15 +22,15 @@ namespace Spritely.Redo.Test
 
         // TryFunctionTest validates shared functional paths between TryAction and TryFunction.
         // These next two methods ensure the TryAction methods call the same underlying functionality.
-        [Fact]
+        [Test]
         public void until_defaults_to_UntilExtension_Until()
         {
             var tryFunction = Try.RunningAsync(() => true);
 
-            Assert.Equal(Run.Until, tryFunction.until);
+            Assert.That(tryFunction.until == Run.Until);
         }
 
-        [Fact]
+        [Test]
         public void Until_calls_until_with_expected_parameters()
         {
             var expectedResult = new object();
@@ -51,12 +52,12 @@ namespace Spritely.Redo.Test
             var actualResult = tryAction.Until(expectedSatisfied);
             actualResult.Wait();
 
-            Assert.Same(expectedResult, actualResult.Result);
-            Assert.Same(expectedSatisfied, actualSatisfied);
-            Assert.Same(expectedConfiguration, actualConfiguration);
+            Assert.That(actualResult.Result, Is.SameAs(expectedResult));
+            Assert.That(actualSatisfied, Is.SameAs(expectedSatisfied));
+            Assert.That(actualConfiguration, Is.SameAs(expectedConfiguration));
         }
 
-        [Fact]
+        [Test]
         public void UntilNotNull_calls_until_with_expected_parameters()
         {
             var expectedResult = new object();
@@ -78,11 +79,11 @@ namespace Spritely.Redo.Test
 
             actualResult.Wait();
 
-            Assert.Same(expectedResult, actualResult.Result);
-            Assert.Same(expectedConfiguration, actualConfiguration);
-            Assert.False(actualSatisfied(null));
-            Assert.True(actualSatisfied(new object()));
-            Assert.True(actualSatisfied(1));
+            Assert.That(actualResult.Result, Is.SameAs(expectedResult));
+            Assert.That(actualConfiguration, Is.SameAs(expectedConfiguration));
+            Assert.That(actualSatisfied(null), Is.False);
+            Assert.That(actualSatisfied(new object()), Is.True);
+            Assert.That(actualSatisfied(1), Is.True);
         }
     }
 }

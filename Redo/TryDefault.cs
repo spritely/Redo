@@ -16,7 +16,7 @@ namespace Spritely.Redo
     public static class TryDefault
     {
         private static readonly object Lock = new object();
-        private static ExceptionList handles;
+        private static ExceptionCollection handles;
         private static IRetryStrategy retryStrategy;
         private static ExceptionListener exceptionListeners;
         private static TimeSpan delay;
@@ -94,6 +94,7 @@ namespace Spritely.Redo
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1810:InitializeReferenceTypeStaticFieldsInline", Justification = "The constructor should guarantee same behavior as he Reset method.")]
         static TryDefault()
         {
             Reset();
@@ -103,6 +104,7 @@ namespace Spritely.Redo
         ///     Adds a default exception handler for new retry operations.
         /// </summary>
         /// <typeparam name="T">The type of exception to handle.</typeparam>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public static void AddHandle<T>() where T : Exception
         {
             lock (Lock)
@@ -115,6 +117,7 @@ namespace Spritely.Redo
         ///     Removes a default exception handler for new retry operations.
         /// </summary>
         /// <typeparam name="T">The type of exception to remove.</typeparam>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public static void RemoveHandle<T>() where T : Exception
         {
             lock (Lock)
@@ -144,7 +147,7 @@ namespace Spritely.Redo
             {
                 retryStrategy = new ConstantDelayRetryStrategy();
                 exceptionListeners = ex => { };
-                handles = new ExceptionList();
+                handles = new ExceptionCollection();
                 maxRetries = 30;
                 delay = TimeSpan.FromSeconds(1);
             }
@@ -158,7 +161,7 @@ namespace Spritely.Redo
                 configuration = new TryConfiguration
                 {
                     ExceptionListeners = ExceptionListeners,
-                    Handles = new ExceptionList(),
+                    Handles = new ExceptionCollection(),
                     RetryStrategy = RetryStrategy
                 };
 

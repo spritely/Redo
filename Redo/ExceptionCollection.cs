@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExceptionList.cs">
+// <copyright file="ExceptionCollection.cs">
 //   Copyright (c) 2015. All rights reserved.
 //   Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -14,7 +14,7 @@ namespace Spritely.Redo
     /// <summary>
     ///     Container for holding types of exceptions.
     /// </summary>
-    public class ExceptionList : IEnumerable<Type>
+    public class ExceptionCollection : IEnumerable<Type>
     {
         private static readonly object Lock = new object();
         private readonly ICollection<Type> exceptions = new List<Type>();
@@ -45,6 +45,7 @@ namespace Spritely.Redo
         ///     Adds the specified exception type.
         /// </summary>
         /// <typeparam name="T">The type of exception to add.</typeparam>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public void Add<T>() where T : Exception
         {
             var type = typeof(T);
@@ -61,20 +62,20 @@ namespace Spritely.Redo
         /// <summary>
         ///     Adds the specified exception type.
         /// </summary>
-        /// <param name="t">The type of exception to add.</param>
+        /// <param name="exception">The type of exception to add.</param>
         /// <exception cref="System.ArgumentException">Type t must be an Exception type.</exception>
-        public void Add(Type t)
+        internal void Add(Type exception)
         {
-            if (!typeof(Exception).IsAssignableFrom(t))
+            if (!typeof(Exception).IsAssignableFrom(exception))
             {
-                throw new ArgumentException("Type t must be an Exception type");
+                throw new ArgumentException("Type must be derived from Exception", "exception");
             }
 
             lock (Lock)
             {
-                if (!this.exceptions.Contains(t))
+                if (!this.exceptions.Contains(exception))
                 {
-                    this.exceptions.Add(t);
+                    this.exceptions.Add(exception);
                 }
             }
         }
@@ -83,6 +84,7 @@ namespace Spritely.Redo
         ///     Removes the specified exception type.
         /// </summary>
         /// <typeparam name="T">The type of exception to remove.</typeparam>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public void Remove<T>() where T : Exception
         {
             var type = typeof(T);

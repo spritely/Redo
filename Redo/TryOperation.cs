@@ -54,6 +54,7 @@ namespace Spritely.Redo
         /// </summary>
         /// <typeparam name="TException">The type of the exception to handle.</typeparam>
         /// <returns>This instance for chaining.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public T Handle<TException>() where TException : Exception
         {
             this.configuration.Handles.Add<TException>();

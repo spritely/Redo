@@ -21,16 +21,16 @@ namespace Spritely.Redo
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryFunction{T}" /> class.
         /// </summary>
-        /// <param name="f">The function to call with retries.</param>
+        /// <param name="function">The function to call with retries.</param>
         /// <exception cref="System.ArgumentNullException">f;Running requires a valid function to call.</exception>
-        public TryFunction(Func<T> f)
+        public TryFunction(Func<T> function)
         {
-            if (f == null)
+            if (function == null)
             {
-                throw new ArgumentNullException("f", "Running requires a valid function to call.");
+                throw new ArgumentNullException("function", "Running requires a valid function to call.");
             }
 
-            this.f = f;
+            this.f = function;
         }
 
         /// <summary>
