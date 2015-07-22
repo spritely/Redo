@@ -14,4 +14,8 @@
     <copyright>Copyright (C) 2015</copyright>
     <tags>Spritely Redo fluent exception handling</tags>
   </metadata>
+    <files>
+    <file src="Spritely.Redo.dll" target="lib\net45" />
+    <file src="Spritely.Redo.pdb" target="lib\net45" />
+  </files>
 </package>
