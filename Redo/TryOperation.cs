@@ -25,7 +25,7 @@ namespace Spritely.Redo
         /// </summary>
         public TryOperation()
         {
-            this.configuration = TryDefault.NewConfiguration();
+            configuration = TryDefault.NewConfiguration();
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Spritely.Redo
         /// <returns>This instance for chaining.</returns>
         public T With(IRetryStrategy retryStrategy)
         {
-            this.configuration.RetryStrategy = retryStrategy;
+            configuration.RetryStrategy = retryStrategy;
 
             return this as T;
         }
@@ -47,7 +47,7 @@ namespace Spritely.Redo
         /// <returns>This instance for chaining.</returns>
         public T Report(ExceptionListener exceptionLogger)
         {
-            this.configuration.ExceptionListeners += exceptionLogger;
+            configuration.ExceptionListeners += exceptionLogger;
 
             return this as T;
         }
@@ -60,7 +60,7 @@ namespace Spritely.Redo
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public T Handle<TException>() where TException : Exception
         {
-            this.configuration.Handles.Add<TException>();
+            configuration.Handles.Add<TException>();
 
             return this as T;
         }

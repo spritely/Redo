@@ -43,8 +43,8 @@ namespace Spritely.Redo
         /// <param name="delay">The delay.</param>
         public ConstantDelayRetryStrategy(int maxRetries, TimeSpan delay)
         {
-            this.MaxRetries = maxRetries;
-            this.Delay = delay;
+            MaxRetries = maxRetries;
+            Delay = delay;
         }
 
         /// <summary>
@@ -52,20 +52,20 @@ namespace Spritely.Redo
         /// </summary>
         public ConstantDelayRetryStrategy()
         {
-            this.MaxRetries = TryDefault.MaxRetries;
-            this.Delay = TryDefault.Delay;
+            MaxRetries = TryDefault.MaxRetries;
+            Delay = TryDefault.Delay;
         }
 
         /// <inheritdoc />
         public bool ShouldQuit(long attempt)
         {
-            return attempt > this.MaxRetries;
+            return attempt > MaxRetries;
         }
 
         /// <inheritdoc />
         public void Wait(long attempt)
         {
-            var sleepTime = this.calculateSleepTime(this.Delay);
+            var sleepTime = calculateSleepTime(Delay);
 
             Thread.Sleep(sleepTime);
         }

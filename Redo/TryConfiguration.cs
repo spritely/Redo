@@ -20,7 +20,7 @@ namespace Spritely.Redo
 
         public void Report(Exception ex)
         {
-            this.ExceptionListeners(ex);
+            ExceptionListeners(ex);
         }
     }
 }

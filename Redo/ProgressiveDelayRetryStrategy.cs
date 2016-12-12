@@ -52,9 +52,9 @@ namespace Spritely.Redo
         /// <param name="delay">The delay.</param>
         public ProgressiveDelayRetryStrategy(double scaleFactor, int maxRetries, TimeSpan delay)
         {
-            this.ScaleFactor = scaleFactor;
-            this.MaxRetries = maxRetries;
-            this.Delay = delay;
+            ScaleFactor = scaleFactor;
+            MaxRetries = maxRetries;
+            Delay = delay;
         }
 
         /// <summary>
@@ -63,21 +63,21 @@ namespace Spritely.Redo
         /// <param name="scaleFactor">The scale factor.</param>
         public ProgressiveDelayRetryStrategy(double scaleFactor)
         {
-            this.ScaleFactor = scaleFactor;
-            this.MaxRetries = TryDefault.MaxRetries;
-            this.Delay = TryDefault.Delay;
+            ScaleFactor = scaleFactor;
+            MaxRetries = TryDefault.MaxRetries;
+            Delay = TryDefault.Delay;
         }
 
         /// <inheritdoc />
         public bool ShouldQuit(long attempt)
         {
-            return attempt > this.MaxRetries;
+            return attempt > MaxRetries;
         }
 
         /// <inheritdoc />
         public void Wait(long attempt)
         {
-            var sleepTime = this.calculateSleepTime(attempt, this.Delay, this.ScaleFactor);
+            var sleepTime = calculateSleepTime(attempt, Delay, ScaleFactor);
 
             Thread.Sleep(sleepTime);
         }

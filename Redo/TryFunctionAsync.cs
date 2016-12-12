@@ -34,7 +34,7 @@ namespace Spritely.Redo
                 throw new ArgumentNullException("function", "Running requires a valid function to call.");
             }
 
-            this.f = function;
+            f = function;
         }
 
         /// <summary>
@@ -44,7 +44,7 @@ namespace Spritely.Redo
         /// <param name="satisfied">The operation that determines success.</param>
         public async Task<T> Until(Func<T, bool> satisfied)
         {
-            return await this.until(this.f, satisfied, this.configuration);
+            return await until(f, satisfied, configuration);
         }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace Spritely.Redo
         /// </summary>
         public Task<T> UntilNotNull()
         {
-            return this.Until(v => v != null);
+            return Until(v => v != null);
         }
     }
 }

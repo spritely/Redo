@@ -32,7 +32,7 @@ namespace Spritely.Redo
                 throw new ArgumentNullException("action", "Running requires a valid function to call.");
             }
 
-            this.f = action;
+            f = action;
         }
 
         /// <summary>
@@ -45,11 +45,11 @@ namespace Spritely.Redo
             // Converting Action into a Func<object> so Run logic can be shared
             Func<object> function = () =>
             {
-                this.f();
+                f();
                 return null;
             };
 
-            this.until(function, _ => satisfied(), this.configuration);
+            until(function, _ => satisfied(), configuration);
         }
     }
 }

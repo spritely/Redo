@@ -30,7 +30,7 @@ namespace Spritely.Redo
         /// </returns>
         public IEnumerator<Type> GetEnumerator()
         {
-            return this.exceptions.GetEnumerator();
+            return exceptions.GetEnumerator();
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Spritely.Redo
         /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return this.exceptions.GetEnumerator();
+            return exceptions.GetEnumerator();
         }
 
         /// <summary>
@@ -55,9 +55,9 @@ namespace Spritely.Redo
 
             lock (Lock)
             {
-                if (!this.exceptions.Contains(type))
+                if (!exceptions.Contains(type))
                 {
-                    this.exceptions.Add(type);
+                    exceptions.Add(type);
                 }
             }
         }
@@ -76,9 +76,9 @@ namespace Spritely.Redo
 
             lock (Lock)
             {
-                if (!this.exceptions.Contains(exception))
+                if (!exceptions.Contains(exception))
                 {
-                    this.exceptions.Add(exception);
+                    exceptions.Add(exception);
                 }
             }
         }
@@ -94,9 +94,9 @@ namespace Spritely.Redo
 
             lock (Lock)
             {
-                if (this.exceptions.Contains(type))
+                if (exceptions.Contains(type))
                 {
-                    this.exceptions.Remove(type);
+                    exceptions.Remove(type);
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace Spritely.Redo
         {
             lock (Lock)
             {
-                this.exceptions.Clear();
+                exceptions.Clear();
             }
         }
     }

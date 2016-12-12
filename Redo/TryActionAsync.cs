@@ -33,7 +33,7 @@ namespace Spritely.Redo
                 throw new ArgumentNullException("action", "Running requires a valid function to call.");
             }
 
-            this.f = action;
+            f = action;
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Spritely.Redo
                 return null;
             };
 
-            await this.until(f, _ => satisfied(), this.configuration);
+            await until(f, _ => satisfied(), configuration);
         }
     }
 }
