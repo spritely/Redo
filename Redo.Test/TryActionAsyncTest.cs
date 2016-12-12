@@ -8,6 +8,7 @@
 namespace Spritely.Redo.Test
 {
     using System;
+    using System.Threading.Tasks;
     using NUnit.Framework;
 
     [TestFixture]
@@ -22,15 +23,15 @@ namespace Spritely.Redo.Test
         // TryFunctionTest validates shared functional paths between TryAction and TryFunction.
         // These next two methods ensure the TryAction methods call the same underlying functionality.
         [Test]
-        public void until_defaults_to_UntilExtension_Until()
+        public void until_defaults_to_UntilExtension_UntilAsync()
         {
-            var tryAction = Try.RunningAsync(() => { });
+            var tryAction = Try.RunningAsync(() => Task.Run(() => { }));
 
-            Assert.That(tryAction.until == Run.Until);
+            Assert.That(tryAction.until == Run.UntilAsync);
         }
 
         [Test]
-        public void Until_calls_until_with_expected_parameters()
+        public async Task Until_calls_until_with_expected_parameters()
         {
             var fCalled = false;
             var satisfiedCalled = false;
@@ -38,23 +39,21 @@ namespace Spritely.Redo.Test
 
             TryConfiguration actualConfiguration = null;
 
-            var tryAction = Try.RunningAsync(() => { fCalled = true; });
+            var tryAction = Try.RunningAsync(() => Task.Run(() => { fCalled = true; }));
             tryAction.configuration = expectedConfiguration;
-            tryAction.until = (f, satisfied, configuration) =>
+            tryAction.until = async (f, satisfied, configuration) =>
             {
-                f();
+                await f();
                 satisfied(null);
                 actualConfiguration = configuration;
                 return null;
             };
 
-            var until = tryAction.Until(() =>
+            await tryAction.Until(() =>
             {
                 satisfiedCalled = true;
                 return true;
             });
-
-            until.Wait();
 
             Assert.That(fCalled, Is.True);
             Assert.That(satisfiedCalled, Is.True);

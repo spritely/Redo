@@ -9,6 +9,8 @@ using System;
 
 namespace Spritely.Redo
 {
+    using System.Threading.Tasks;
+
     /// <summary>
     ///     The main entry point to start building a retryable function.
     /// </summary>
@@ -44,7 +46,7 @@ namespace Spritely.Redo
         /// <param name="action">The function to call with retries.</param>
         /// <returns>A retryable function.</returns>
         /// <exception cref="System.ArgumentNullException">Running requires a valid function to call.</exception>
-        public static TryActionAsync RunningAsync(Action action)
+        public static TryActionAsync RunningAsync(Func<Task> action)
         {
             return new TryActionAsync(action);
         }
@@ -56,7 +58,7 @@ namespace Spritely.Redo
         /// <param name="function">The function to call with retries.</param>
         /// <returns>A retryable function.</returns>
         /// <exception cref="System.ArgumentNullException">Running requires a valid function to call.</exception>
-        public static TryFunctionAsync<T> RunningAsync<T>(Func<T> function)
+        public static TryFunctionAsync<T> RunningAsync<T>(Func<Task<T>> function)
         {
             return new TryFunctionAsync<T>(function);
         }

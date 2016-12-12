@@ -16,15 +16,15 @@ namespace Spritely.Redo
     /// <typeparam name="T">Type of the result of the call to f passed to Try.RunningAsync().</typeparam>
     public sealed class TryFunctionAsync<T> : TryOperation<TryFunctionAsync<T>>
     {
-        internal Func<T> f;
-        internal Func<Func<T>, Func<T, bool>, TryConfiguration, T> until = Run.Until;
+        internal Func<Task<T>> f;
+        internal Func<Func<Task<T>>, Func<T, bool>, TryConfiguration, Task<T>> until = Run.UntilAsync;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryFunctionAsync{T}" /> class.
         /// </summary>
         /// <param name="function">The function to call with retries.</param>
         /// <exception cref="System.ArgumentNullException">f;Running requires a valid function to call.</exception>
-        public TryFunctionAsync(Func<T> function)
+        public TryFunctionAsync(Func<Task<T>> function)
         {
             if (function == null)
             {
@@ -41,7 +41,7 @@ namespace Spritely.Redo
         /// <param name="satisfied">The operation that determines success.</param>
         public async Task<T> Until(Func<T, bool> satisfied)
         {
-            return await Task.Run(() => this.until(this.f, satisfied, this.configuration));
+            return await this.until(this.f, satisfied, this.configuration);
         }
 
         /// <summary>
