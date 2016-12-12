@@ -12,13 +12,14 @@ namespace Spritely.Redo
 {
     using System;
     using System.Threading;
+    using Spritely.Redo.Internal;
 
     /// <summary>
     ///     A retry strategy with a constant delay.
     /// </summary>
     public class ConstantDelayRetryStrategy : IRetryStrategy
     {
-        internal Func<TimeSpan, TimeSpan> calculateSleepTime = CalculateSleepTime;
+        internal Func<TimeSpan, TimeSpan> _calculateSleepTime = SafeDelay.CalculateConstantDelaySleepTime;
 
         /// <summary>
         ///     Gets or sets the delay.
@@ -65,16 +66,9 @@ namespace Spritely.Redo
         /// <inheritdoc />
         public void Wait(long attempt)
         {
-            var sleepTime = calculateSleepTime(Delay);
+            var sleepTime = _calculateSleepTime(Delay);
 
             Thread.Sleep(sleepTime);
-        }
-
-        internal static TimeSpan CalculateSleepTime(TimeSpan delay)
-        {
-            var sleepTime = TimeSpan.FromMilliseconds(Math.Max(1, delay.TotalMilliseconds));
-
-            return sleepTime;
         }
     }
 }

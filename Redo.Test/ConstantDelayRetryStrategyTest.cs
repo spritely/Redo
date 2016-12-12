@@ -13,6 +13,7 @@ namespace Spritely.Redo.Test
     using System;
     using System.Diagnostics;
     using NUnit.Framework;
+    using Spritely.Redo.Internal;
 
     [TestFixture]
     public class ConstantDelayRetryStrategyTest
@@ -63,7 +64,7 @@ namespace Spritely.Redo.Test
             var retryStrategy = new ConstantDelayRetryStrategy();
             retryStrategy.Delay = TimeSpan.FromMilliseconds(this.random.Next(1, int.MaxValue));
 
-            retryStrategy.calculateSleepTime = delay =>
+            retryStrategy._calculateSleepTime = delay =>
             {
                 wasCalled = true;
                 Assert.That(delay, Is.EqualTo(retryStrategy.Delay));
@@ -80,7 +81,7 @@ namespace Spritely.Redo.Test
             var retryStrategy = new ConstantDelayRetryStrategy();
 
             // This will cause a delay in test execution - keep value tiny
-            retryStrategy.calculateSleepTime = _ => TimeSpan.FromMilliseconds(50);
+            retryStrategy._calculateSleepTime = _ => TimeSpan.FromMilliseconds(50);
 
             var stopWatch = Stopwatch.StartNew();
             retryStrategy.Wait(1);
@@ -96,7 +97,7 @@ namespace Spritely.Redo.Test
         {
             var expectedDelay = TimeSpan.FromMilliseconds(this.random.Next(1, int.MaxValue));
 
-            var actualDelay = ConstantDelayRetryStrategy.CalculateSleepTime(expectedDelay);
+            var actualDelay = SafeDelay.CalculateConstantDelaySleepTime(expectedDelay);
 
             Assert.That(actualDelay, Is.EqualTo(expectedDelay));
         }
@@ -104,7 +105,7 @@ namespace Spritely.Redo.Test
         [Test]
         public void CalculateSleepTime_ensures_delay_is_at_least_1()
         {
-            var actualDelay = ConstantDelayRetryStrategy.CalculateSleepTime(TimeSpan.Zero);
+            var actualDelay = SafeDelay.CalculateConstantDelaySleepTime(TimeSpan.Zero);
 
             Assert.That(actualDelay.TotalMilliseconds, Is.EqualTo(1));
         }

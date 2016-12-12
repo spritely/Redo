@@ -13,6 +13,7 @@ namespace Spritely.Redo.Test
     using System;
     using System.Threading.Tasks;
     using NUnit.Framework;
+    using Spritely.Redo.Internal;
 
     // Most methods in this class have a near exact equivalent in TryFunctionTest
     [TestFixture]
@@ -31,7 +32,7 @@ namespace Spritely.Redo.Test
         {
             var tryFunction = Try.RunningAsync(() => Task.Run(() => true));
 
-            Assert.That(tryFunction.until == Run.UntilAsync);
+            Assert.That(tryFunction._until == Run.UntilAsync);
         }
 
         [Test]
@@ -45,8 +46,8 @@ namespace Spritely.Redo.Test
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.RunningAsync(() => Task.Run(() => expectedResult));
-            tryAction.configuration = expectedConfiguration;
-            tryAction.until = async (f, satisfied, configuration) =>
+            tryAction._configuration = expectedConfiguration;
+            tryAction._until = async (f, satisfied, configuration) =>
             {
                 actualSatisfied = satisfied;
                 actualConfiguration = configuration;
@@ -70,8 +71,8 @@ namespace Spritely.Redo.Test
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.RunningAsync(() => Task.Run(() => expectedResult));
-            tryAction.configuration = expectedConfiguration;
-            tryAction.until = async (f, satisfied, configuration) =>
+            tryAction._configuration = expectedConfiguration;
+            tryAction._until = async (f, satisfied, configuration) =>
             {
                 actualSatisfied = satisfied;
                 actualConfiguration = configuration;

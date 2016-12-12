@@ -12,6 +12,7 @@ namespace Spritely.Redo
 {
     using System;
     using System.Threading.Tasks;
+    using Spritely.Redo.Internal;
 
     /// <summary>
     ///     Part of fluent API when user calls Try.RunningAsync() with an asynchronous function.
@@ -19,8 +20,8 @@ namespace Spritely.Redo
     /// <typeparam name="T">Type of the result of the call to f passed to Try.RunningAsync().</typeparam>
     public sealed class TryFunctionAsync<T> : TryOperation<TryFunctionAsync<T>>
     {
-        internal Func<Task<T>> f;
-        internal Func<Func<Task<T>>, Func<T, bool>, TryConfiguration, Task<T>> until = Run.UntilAsync;
+        private readonly Func<Task<T>> f;
+        internal Func<Func<Task<T>>, Func<T, bool>, TryConfiguration, Task<T>> _until = Run.UntilAsync;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryFunctionAsync{T}" /> class.
@@ -44,7 +45,7 @@ namespace Spritely.Redo
         /// <param name="satisfied">The operation that determines success.</param>
         public async Task<T> Until(Func<T, bool> satisfied)
         {
-            return await until(f, satisfied, configuration);
+            return await _until(f, satisfied, _configuration);
         }
 
         /// <summary>

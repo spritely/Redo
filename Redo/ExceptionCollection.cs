@@ -67,7 +67,7 @@ namespace Spritely.Redo
         /// </summary>
         /// <param name="exception">The type of exception to add.</param>
         /// <exception cref="System.ArgumentException">Type t must be an Exception type.</exception>
-        internal void Add(Type exception)
+        public void Add(Type exception)
         {
             if (!typeof(Exception).IsAssignableFrom(exception))
             {

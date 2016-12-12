@@ -11,6 +11,7 @@
 namespace Spritely.Redo
 {
     using System;
+    using Spritely.Redo.Internal;
 
     /// <summary>
     ///     Part of fluent API when user calls Try.Running() with a function.
@@ -18,8 +19,8 @@ namespace Spritely.Redo
     /// <typeparam name="T">Type of the result of the call to f passed to Try.Running().</typeparam>
     public sealed class TryFunction<T> : TryOperation<TryFunction<T>>
     {
-        internal Func<T> f;
-        internal Func<Func<T>, Func<T, bool>, TryConfiguration, T> until = Run.Until;
+        private readonly Func<T> f;
+        internal Func<Func<T>, Func<T, bool>, TryConfiguration, T> _until = Run.Until;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryFunction{T}" /> class.
@@ -43,7 +44,7 @@ namespace Spritely.Redo
         /// <param name="satisfied">The operation that determines success.</param>
         public T Until(Func<T, bool> satisfied)
         {
-            return until(f, satisfied, configuration);
+            return _until(f, satisfied, _configuration);
         }
 
         /// <summary>

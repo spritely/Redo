@@ -13,6 +13,7 @@ namespace Spritely.Redo.Test
     using System;
     using System.Threading.Tasks;
     using NUnit.Framework;
+    using Spritely.Redo.Internal;
 
     [TestFixture]
     public class TryActionAsyncTest
@@ -30,7 +31,7 @@ namespace Spritely.Redo.Test
         {
             var tryAction = Try.RunningAsync(() => Task.Run(() => { }));
 
-            Assert.That(tryAction.until == Run.UntilAsync);
+            Assert.That(tryAction._until == Run.UntilAsync);
         }
 
         [Test]
@@ -43,8 +44,8 @@ namespace Spritely.Redo.Test
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.RunningAsync(() => Task.Run(() => { fCalled = true; }));
-            tryAction.configuration = expectedConfiguration;
-            tryAction.until = async (f, satisfied, configuration) =>
+            tryAction._configuration = expectedConfiguration;
+            tryAction._until = async (f, satisfied, configuration) =>
             {
                 await f();
                 satisfied(null);

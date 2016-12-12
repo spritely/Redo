@@ -14,6 +14,7 @@ namespace Spritely.Redo.Test
     using System.Linq;
     using Moq;
     using NUnit.Framework;
+    using Spritely.Redo.Internal;
 
     [TestFixture]
     public class TryOperationTest
@@ -25,7 +26,7 @@ namespace Spritely.Redo.Test
 
             var configuration = new TryConfiguration();
             var retryStrategy = new Mock<IRetryStrategy>();
-            tryAction.configuration = configuration;
+            tryAction._configuration = configuration;
 
             tryAction.With(retryStrategy.Object);
 
@@ -41,7 +42,7 @@ namespace Spritely.Redo.Test
 
             tryAction.Report(ex => actualException = ex);
 
-            tryAction.configuration.ExceptionListeners(expectedException);
+            tryAction._configuration.ExceptionListeners(expectedException);
 
             Assert.That(actualException, Is.SameAs(expectedException));
         }
@@ -53,7 +54,7 @@ namespace Spritely.Redo.Test
 
             tryAction.Handle<TestException>();
 
-            Assert.That(tryAction.configuration.Handles.Contains(typeof(TestException)), Is.True);
+            Assert.That(tryAction._configuration.Handles.Contains(typeof(TestException)), Is.True);
         }
 
         [Serializable]

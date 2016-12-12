@@ -14,6 +14,7 @@ namespace Spritely.Redo.Test
     using System.Linq;
     using Moq;
     using NUnit.Framework;
+    using Spritely.Redo.Internal;
 
     [TestFixture]
     public class TryFunctionTest
@@ -49,7 +50,7 @@ namespace Spritely.Redo.Test
         {
             var tryFunction = Try.Running(() => true);
 
-            Assert.That(tryFunction.until == Run.Until);
+            Assert.That(tryFunction._until == Run.Until);
         }
 
         [Test]
@@ -63,8 +64,8 @@ namespace Spritely.Redo.Test
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.Running(() => expectedResult);
-            tryAction.configuration = expectedConfiguration;
-            tryAction.until = (f, satisfied, configuration) =>
+            tryAction._configuration = expectedConfiguration;
+            tryAction._until = (f, satisfied, configuration) =>
             {
                 actualSatisfied = satisfied;
                 actualConfiguration = configuration;
@@ -88,8 +89,8 @@ namespace Spritely.Redo.Test
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.Running(() => expectedResult);
-            tryAction.configuration = expectedConfiguration;
-            tryAction.until = (f, satisfied, configuration) =>
+            tryAction._configuration = expectedConfiguration;
+            tryAction._until = (f, satisfied, configuration) =>
             {
                 actualSatisfied = satisfied;
                 actualConfiguration = configuration;

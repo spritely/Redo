@@ -8,14 +8,54 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Spritely.Redo
+namespace Spritely.Redo.Internal
 {
     using System;
 
     internal class SafeDelay
     {
-        internal static TimeSpan ConstrainBounds(double delay, double minimumBounds = 1,
-            double maximumBounds = double.MaxValue)
+        public static TimeSpan CalculateConstantDelaySleepTime(TimeSpan delay)
+        {
+            var sleepTime = TimeSpan.FromMilliseconds(Math.Max(1, delay.TotalMilliseconds));
+
+            return sleepTime;
+        }
+
+        public static TimeSpan CalculateExponentialDelaySleepTime(long attempt, TimeSpan delay, double scaleFactor)
+        {
+            var factor = Math.Pow(scaleFactor, (attempt - 1));
+            var safefactor = (factor < 1) ? 1 : factor;
+            var totalDelay = delay.TotalMilliseconds * safefactor;
+
+            var sleepTime = ConstrainBounds(totalDelay);
+
+            return sleepTime;
+        }
+
+        public static TimeSpan CalculateLinearDelaySleepTime(long attempt, TimeSpan delay, double scaleFactor)
+        {
+            var factor = ((attempt - 1) * scaleFactor);
+            var safefactor = (factor < 0) ? 0 : factor;
+            var totalDelay = delay.TotalMilliseconds + safefactor;
+
+            var sleepTime = ConstrainBounds(totalDelay);
+
+            return sleepTime;
+        }
+
+        public static TimeSpan CalculateProgressiveDelaySleepTime(long attempt, TimeSpan delay, double scaleFactor)
+        {
+            var factor = ((attempt - 1) * scaleFactor);
+            var safefactor = (factor < 1) ? 1 : factor;
+            var totalDelay = delay.TotalMilliseconds * safefactor;
+
+            var sleepTime = ConstrainBounds(totalDelay);
+
+            return sleepTime;
+        }
+
+        public static TimeSpan ConstrainBounds(double delay, double minimumBounds = 1,
+            double maximumBounds = Double.MaxValue)
         {
             if (minimumBounds > maximumBounds)
             {

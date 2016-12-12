@@ -12,6 +12,7 @@ namespace Spritely.Redo.Test
 {
     using System;
     using NUnit.Framework;
+    using Spritely.Redo.Internal;
 
     [TestFixture]
     public class TryActionTest
@@ -29,7 +30,7 @@ namespace Spritely.Redo.Test
         {
             var tryAction = Try.Running(() => { });
 
-            Assert.That(tryAction.until == Run.Until);
+            Assert.That(tryAction._until == Run.Until);
         }
 
         [Test]
@@ -42,8 +43,8 @@ namespace Spritely.Redo.Test
             TryConfiguration actualConfiguration = null;
 
             var tryAction = Try.Running(() => { fCalled = true; });
-            tryAction.configuration = expectedConfiguration;
-            tryAction.until = (f, satisfied, configuration) =>
+            tryAction._configuration = expectedConfiguration;
+            tryAction._until = (f, satisfied, configuration) =>
             {
                 f();
                 satisfied(null);

@@ -11,14 +11,15 @@
 namespace Spritely.Redo
 {
     using System;
+    using Spritely.Redo.Internal;
 
     /// <summary>
     ///     Part of fluent API when user calls Try.Running() with an action.
     /// </summary>
     public sealed class TryAction : TryOperation<TryAction>
     {
-        internal Action f;
-        internal Func<Func<object>, Func<object, bool>, TryConfiguration, object> until = Run.Until;
+        private readonly Action f;
+        internal Func<Func<object>, Func<object, bool>, TryConfiguration, object> _until = Run.Until;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryAction" /> class.
@@ -49,7 +50,7 @@ namespace Spritely.Redo
                 return null;
             };
 
-            until(function, _ => satisfied(), configuration);
+            _until(function, _ => satisfied(), _configuration);
         }
     }
 }

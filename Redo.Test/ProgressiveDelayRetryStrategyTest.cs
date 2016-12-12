@@ -13,6 +13,7 @@ namespace Spritely.Redo.Test
     using System;
     using System.Diagnostics;
     using NUnit.Framework;
+    using Spritely.Redo.Internal;
 
     [TestFixture]
     public class ProgressiveDelayRetryStrategyTest
@@ -69,7 +70,7 @@ namespace Spritely.Redo.Test
             var retryStrategy = new ProgressiveDelayRetryStrategy(expectedScaleFactor);
             retryStrategy.Delay = TimeSpan.FromMilliseconds(this.random.Next(1, int.MaxValue));
 
-            retryStrategy.calculateSleepTime = (attempt, delay, scaleFactor) =>
+            retryStrategy._calculateSleepTime = (attempt, delay, scaleFactor) =>
             {
                 wasCalled = true;
 
@@ -90,7 +91,7 @@ namespace Spritely.Redo.Test
             var retryStrategy = new ProgressiveDelayRetryStrategy(1);
 
             // This will cause a delay in test execution - keep value tiny
-            retryStrategy.calculateSleepTime = (_, __, ___) => TimeSpan.FromMilliseconds(50);
+            retryStrategy._calculateSleepTime = (_, __, ___) => TimeSpan.FromMilliseconds(50);
 
             var stopWatch = Stopwatch.StartNew();
             retryStrategy.Wait(1);
@@ -106,16 +107,16 @@ namespace Spritely.Redo.Test
         {
             var delay = TimeSpan.FromMilliseconds(2);
 
-            Assert.That(ProgressiveDelayRetryStrategy.CalculateSleepTime(1, delay, 10).TotalMilliseconds, Is.EqualTo(2));
-            Assert.That(ProgressiveDelayRetryStrategy.CalculateSleepTime(2, delay, 10).TotalMilliseconds, Is.EqualTo(20));
-            Assert.That(ProgressiveDelayRetryStrategy.CalculateSleepTime(3, delay, 10).TotalMilliseconds, Is.EqualTo(40));
-            Assert.That(ProgressiveDelayRetryStrategy.CalculateSleepTime(6, delay, 10).TotalMilliseconds, Is.EqualTo(100));
+            Assert.That(SafeDelay.CalculateProgressiveDelaySleepTime(1, delay, 10).TotalMilliseconds, Is.EqualTo(2));
+            Assert.That(SafeDelay.CalculateProgressiveDelaySleepTime(2, delay, 10).TotalMilliseconds, Is.EqualTo(20));
+            Assert.That(SafeDelay.CalculateProgressiveDelaySleepTime(3, delay, 10).TotalMilliseconds, Is.EqualTo(40));
+            Assert.That(SafeDelay.CalculateProgressiveDelaySleepTime(6, delay, 10).TotalMilliseconds, Is.EqualTo(100));
         }
 
         [Test]
         public void CalculateSleepTime_ensures_delay_is_at_least_1()
         {
-            var actualDelay = ProgressiveDelayRetryStrategy.CalculateSleepTime(1, TimeSpan.Zero, -1);
+            var actualDelay = SafeDelay.CalculateProgressiveDelaySleepTime(1, TimeSpan.Zero, -1);
 
             Assert.That(actualDelay.TotalMilliseconds, Is.EqualTo(1));
         }
@@ -124,7 +125,7 @@ namespace Spritely.Redo.Test
         public void CalculateSleepTime_ensures_delay_is_no_greater_than_max_timespan_value()
         {
             var nearMaxTimeSpan = TimeSpan.MaxValue.Subtract(TimeSpan.FromMilliseconds(1));
-            var actualDelay = ProgressiveDelayRetryStrategy.CalculateSleepTime(10, nearMaxTimeSpan, 10);
+            var actualDelay = SafeDelay.CalculateProgressiveDelaySleepTime(10, nearMaxTimeSpan, 10);
 
             Assert.That(actualDelay, Is.EqualTo(TimeSpan.MaxValue));
         }

@@ -13,6 +13,7 @@ namespace Spritely.Redo.Test
     using System;
     using System.Diagnostics;
     using NUnit.Framework;
+    using Spritely.Redo.Internal;
 
     [TestFixture]
     public class LinearDelayRetryStrategyTest
@@ -69,7 +70,7 @@ namespace Spritely.Redo.Test
             var retryStrategy = new LinearDelayRetryStrategy(expectedScaleFactor);
             retryStrategy.Delay = TimeSpan.FromMilliseconds(this.random.Next(1, int.MaxValue));
 
-            retryStrategy.calculateSleepTime = (attempt, delay, scaleFactor) =>
+            retryStrategy._calculateSleepTime = (attempt, delay, scaleFactor) =>
             {
                 wasCalled = true;
 
@@ -90,7 +91,7 @@ namespace Spritely.Redo.Test
             var retryStrategy = new LinearDelayRetryStrategy(1);
 
             // This will cause a delay in test execution - keep value tiny
-            retryStrategy.calculateSleepTime = (_, __, ___) => TimeSpan.FromMilliseconds(50);
+            retryStrategy._calculateSleepTime = (_, __, ___) => TimeSpan.FromMilliseconds(50);
 
             var stopWatch = Stopwatch.StartNew();
             retryStrategy.Wait(1);
@@ -106,16 +107,16 @@ namespace Spritely.Redo.Test
         {
             var delay = TimeSpan.FromMilliseconds(10);
 
-            Assert.That(LinearDelayRetryStrategy.CalculateSleepTime(1, delay, 10).TotalMilliseconds, Is.EqualTo(10));
-            Assert.That(LinearDelayRetryStrategy.CalculateSleepTime(2, delay, 10).TotalMilliseconds, Is.EqualTo(20));
-            Assert.That(LinearDelayRetryStrategy.CalculateSleepTime(3, delay, 10).TotalMilliseconds, Is.EqualTo(30));
-            Assert.That(LinearDelayRetryStrategy.CalculateSleepTime(10, delay, 10).TotalMilliseconds, Is.EqualTo(100));
+            Assert.That(SafeDelay.CalculateLinearDelaySleepTime(1, delay, 10).TotalMilliseconds, Is.EqualTo(10));
+            Assert.That(SafeDelay.CalculateLinearDelaySleepTime(2, delay, 10).TotalMilliseconds, Is.EqualTo(20));
+            Assert.That(SafeDelay.CalculateLinearDelaySleepTime(3, delay, 10).TotalMilliseconds, Is.EqualTo(30));
+            Assert.That(SafeDelay.CalculateLinearDelaySleepTime(10, delay, 10).TotalMilliseconds, Is.EqualTo(100));
         }
 
         [Test]
         public void CalculateSleepTime_ensures_delay_is_at_least_1()
         {
-            var actualDelay = LinearDelayRetryStrategy.CalculateSleepTime(1, TimeSpan.Zero, -1);
+            var actualDelay = SafeDelay.CalculateLinearDelaySleepTime(1, TimeSpan.Zero, -1);
 
             Assert.That(actualDelay.TotalMilliseconds, Is.EqualTo(1));
         }

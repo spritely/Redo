@@ -12,13 +12,14 @@ namespace Spritely.Redo
 {
     using System;
     using System.Threading;
+    using Spritely.Redo.Internal;
 
     /// <summary>
     ///     A retry strategy that backs off with a linear decay (addition).
     /// </summary>
     public class LinearDelayRetryStrategy : IRetryStrategy
     {
-        internal Func<long, TimeSpan, double, TimeSpan> calculateSleepTime = CalculateSleepTime;
+        internal Func<long, TimeSpan, double, TimeSpan> _calculateSleepTime = SafeDelay.CalculateLinearDelaySleepTime;
 
         /// <summary>
         ///     Gets or sets the delay.
@@ -77,20 +78,9 @@ namespace Spritely.Redo
         /// <inheritdoc />
         public void Wait(long attempt)
         {
-            var sleepTime = calculateSleepTime(attempt, Delay, ScaleFactor);
+            var sleepTime = _calculateSleepTime(attempt, Delay, ScaleFactor);
 
             Thread.Sleep(sleepTime);
-        }
-
-        internal static TimeSpan CalculateSleepTime(long attempt, TimeSpan delay, double scaleFactor)
-        {
-            var factor = ((attempt - 1) * scaleFactor);
-            var safefactor = (factor < 0) ? 0 : factor;
-            var totalDelay = delay.TotalMilliseconds + safefactor;
-
-            var sleepTime = SafeDelay.ConstrainBounds(totalDelay);
-
-            return sleepTime;
         }
     }
 }

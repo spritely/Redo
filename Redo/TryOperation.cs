@@ -11,6 +11,7 @@
 namespace Spritely.Redo
 {
     using System;
+    using Spritely.Redo.Internal;
 
     /// <summary>
     ///     Base class for all Try... classes.
@@ -18,14 +19,14 @@ namespace Spritely.Redo
     /// <typeparam name="T">The type of operation (must be the type of the child class).</typeparam>
     public class TryOperation<T> where T : TryOperation<T>
     {
-        internal TryConfiguration configuration;
+        internal TryConfiguration _configuration;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryOperation{T}" /> class.
         /// </summary>
         public TryOperation()
         {
-            configuration = TryDefault.NewConfiguration();
+            _configuration = TryConfiguration.Create();
         }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Spritely.Redo
         /// <returns>This instance for chaining.</returns>
         public T With(IRetryStrategy retryStrategy)
         {
-            configuration.RetryStrategy = retryStrategy;
+            _configuration.RetryStrategy = retryStrategy;
 
             return this as T;
         }
@@ -47,7 +48,7 @@ namespace Spritely.Redo
         /// <returns>This instance for chaining.</returns>
         public T Report(ExceptionListener exceptionLogger)
         {
-            configuration.ExceptionListeners += exceptionLogger;
+            _configuration.ExceptionListeners += exceptionLogger;
 
             return this as T;
         }
@@ -60,7 +61,7 @@ namespace Spritely.Redo
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public T Handle<TException>() where TException : Exception
         {
-            configuration.Handles.Add<TException>();
+            _configuration.Handles.Add<TException>();
 
             return this as T;
         }

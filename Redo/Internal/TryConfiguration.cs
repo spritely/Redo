@@ -8,9 +8,10 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Spritely.Redo
+namespace Spritely.Redo.Internal
 {
     using System;
+    using System.Linq;
 
     internal class TryConfiguration
     {
@@ -21,6 +22,24 @@ namespace Spritely.Redo
         public void Report(Exception ex)
         {
             ExceptionListeners(ex);
+        }
+
+        public static TryConfiguration Create()
+        {
+            TryConfiguration configuration;
+            lock (TryDefault._Lock)
+            {
+                configuration = new TryConfiguration
+                {
+                    ExceptionListeners = TryDefault.ExceptionListeners,
+                    Handles = new ExceptionCollection(),
+                    RetryStrategy = TryDefault.RetryStrategy
+                };
+
+                TryDefault._handles.ToList().ForEach(h => configuration.Handles.Add(h));
+            }
+
+            return configuration;
         }
     }
 }

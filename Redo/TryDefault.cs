@@ -12,14 +12,15 @@ namespace Spritely.Redo
 {
     using System;
     using System.Linq;
+    using Spritely.Redo.Internal;
 
     /// <summary>
     ///     Container for all try operation default configuration options.
     /// </summary>
     public static class TryDefault
     {
-        private static readonly object Lock = new object();
-        private static ExceptionCollection handles;
+        internal static readonly object _Lock = new object();
+        internal static ExceptionCollection _handles;
         private static IRetryStrategy retryStrategy;
         private static ExceptionListener exceptionListeners;
         private static TimeSpan delay;
@@ -36,7 +37,7 @@ namespace Spritely.Redo
             get { return delay; }
             set
             {
-                lock (Lock)
+                lock (_Lock)
                 {
                     delay = value;
                 }
@@ -54,7 +55,7 @@ namespace Spritely.Redo
             get { return maxRetries; }
             set
             {
-                lock (Lock)
+                lock (_Lock)
                 {
                     maxRetries = value;
                 }
@@ -72,7 +73,7 @@ namespace Spritely.Redo
             get { return retryStrategy; }
             set
             {
-                lock (Lock)
+                lock (_Lock)
                 {
                     retryStrategy = value ?? new ConstantDelayRetryStrategy();
                 }
@@ -90,7 +91,7 @@ namespace Spritely.Redo
             get { return exceptionListeners; }
             set
             {
-                lock (Lock)
+                lock (_Lock)
                 {
                     exceptionListeners = value ?? (exceptionListeners = ex => { });
                 }
@@ -110,9 +111,9 @@ namespace Spritely.Redo
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public static void AddHandle<T>() where T : Exception
         {
-            lock (Lock)
+            lock (_Lock)
             {
-                handles.Add<T>();
+                _handles.Add<T>();
             }
         }
 
@@ -123,9 +124,9 @@ namespace Spritely.Redo
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1004:GenericMethodsShouldProvideTypeParameter", Justification = "This is a fluent interface where this is the simplest type-safe way to tell the library how to handle specific types.")]
         public static void RemoveHandle<T>() where T : Exception
         {
-            lock (Lock)
+            lock (_Lock)
             {
-                handles.Remove<T>();
+                _handles.Remove<T>();
             }
         }
 
@@ -135,9 +136,9 @@ namespace Spritely.Redo
         /// </summary>
         public static void ResetHandles()
         {
-            lock (Lock)
+            lock (_Lock)
             {
-                handles.Reset();
+                _handles.Reset();
             }
         }
 
@@ -146,32 +147,14 @@ namespace Spritely.Redo
         /// </summary>
         public static void Reset()
         {
-            lock (Lock)
+            lock (_Lock)
             {
                 retryStrategy = new ConstantDelayRetryStrategy();
                 exceptionListeners = ex => { };
-                handles = new ExceptionCollection();
+                _handles = new ExceptionCollection();
                 maxRetries = 30;
                 delay = TimeSpan.FromSeconds(1);
             }
-        }
-
-        internal static TryConfiguration NewConfiguration()
-        {
-            TryConfiguration configuration;
-            lock (Lock)
-            {
-                configuration = new TryConfiguration
-                {
-                    ExceptionListeners = ExceptionListeners,
-                    Handles = new ExceptionCollection(),
-                    RetryStrategy = RetryStrategy
-                };
-
-                handles.ToList().ForEach(h => configuration.Handles.Add(h));
-            }
-
-            return configuration;
         }
     }
 }

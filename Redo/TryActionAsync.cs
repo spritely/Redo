@@ -12,14 +12,15 @@ namespace Spritely.Redo
 {
     using System;
     using System.Threading.Tasks;
+    using Spritely.Redo.Internal;
 
     /// <summary>
     ///     Part of fluent API when user calls Try.RunningAsync() with an asynchronous action.
     /// </summary>
     public sealed class TryActionAsync : TryOperation<TryActionAsync>
     {
-        internal Func<Task> f;
-        internal Func<Func<Task<object>>, Func<object, bool>, TryConfiguration, Task<object>> until = Run.UntilAsync;
+        private readonly Func<Task> f;
+        internal Func<Func<Task<object>>, Func<object, bool>, TryConfiguration, Task<object>> _until = Run.UntilAsync;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TryActionAsync" /> class.
@@ -50,7 +51,7 @@ namespace Spritely.Redo
                 return null;
             };
 
-            await until(f, _ => satisfied(), configuration);
+            await _until(f, _ => satisfied(), _configuration);
         }
     }
 }
