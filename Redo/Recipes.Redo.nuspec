@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Spritely.Recipes.Redo</id>
+    <version>$version$</version>
+    <title>Spritely.Recipes.Redo</title>
+    <authors>Spritely Developers</authors>
+    <owners>Spritely Developers</owners>
+    <language>en-US</language>
+    <licenseUrl>https://github.com/spritely/Redo/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/spritely/Redo</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Provides .NET exception handling retry logic via a fluent interface in a recipe format.</description>
+    <copyright>Copyright (C) 2016</copyright>
+    <tags>Spritely Redo fluent exception handling</tags>
+  </metadata>
+  <files>
+    <file src="Internal\Run.cs" target="content\net45\.Spritely.Recipes\Redo\Internal\Run.cs" />
+    <file src="Internal\SafeDelay.cs" target="content\net45\.Spritely.Recipes\Redo\Internal\SafeDelay.cs" />
+    <file src="Internal\TryConfiguration.cs" target="content\net45\.Spritely.Recipes\Redo\Internal\TryConfiguration.cs" />
+    <file src="ConstantDelayRetryStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\ConstantDelayRetryStrategy.cs" />
+    <file src="Delegates.cs" target="content\net45\.Spritely.Recipes\Redo\Delegates.cs" />
+    <file src="ExceptionCollection.cs" target="content\net45\.Spritely.Recipes\Redo\ExceptionCollection.cs" />
+    <file src="ExponentialDelayRetryStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\ExponentialDelayRetryStrategy.cs" />
+    <file src="IRetryStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\IRetryStrategy.cs" />
+    <file src="LinearDelayRetryStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\LinearDelayRetryStrategy.cs" />
+    <file src="ProgressiveDelayRetryStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\ProgressiveDelayRetryStrategy.cs" />
+    <file src="Try.cs" target="content\net45\.Spritely.Recipes\Redo\Try.cs" />
+    <file src="TryAction.cs" target="content\net45\.Spritely.Recipes\Redo\TryAction.cs" />
+    <file src="TryActionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\TryActionAsync.cs" />
+    <file src="TryDefault.cs" target="content\net45\.Spritely.Recipes\Redo\TryDefault.cs" />
+    <file src="TryFunction.cs" target="content\net45\.Spritely.Recipes\Redo\TryFunction.cs" />
+    <file src="TryFunctionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\TryFunctionAsync.cs" />
+    <file src="TryOperation.cs" target="content\net45\.Spritely.Recipes\Redo\TryOperation.cs" />
+  </files>
+</package>

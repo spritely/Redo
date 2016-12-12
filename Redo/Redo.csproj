@@ -18,7 +18,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;SpritelyRecipesProject</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -28,7 +28,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;SpritelyRecipesProject</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -37,7 +37,7 @@
   <ItemGroup>
     <Compile Include="ExceptionCollection.cs" />
     <Compile Include="ProgressiveDelayRetryStrategy.cs" />
-    <Compile Include="SafeDelay.cs" />
+    <Compile Include="Internal\SafeDelay.cs" />
     <Compile Include="ExponentialDelayRetryStrategy.cs" />
     <Compile Include="LinearDelayRetryStrategy.cs" />
     <Compile Include="ConstantDelayRetryStrategy.cs" />
@@ -46,9 +46,9 @@
     <Compile Include="IRetryStrategy.cs" />
     <Compile Include="TryOperation.cs" />
     <Compile Include="TryDefault.cs" />
-    <Compile Include="TryConfiguration.cs" />
+    <Compile Include="Internal\TryConfiguration.cs" />
     <Compile Include="Delegates.cs" />
-    <Compile Include="Run.cs" />
+    <Compile Include="Internal\Run.cs" />
     <Compile Include="TryFunctionAsync.cs" />
     <Compile Include="TryFunction.cs" />
     <Compile Include="Try.cs" />
@@ -56,6 +56,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Recipes.Redo.nuspec" />
+    <None Include="Redo.nuspec" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
