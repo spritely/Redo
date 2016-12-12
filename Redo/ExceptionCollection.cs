@@ -17,7 +17,13 @@ namespace Spritely.Redo
     /// <summary>
     ///     Container for holding types of exceptions.
     /// </summary>
-    public class ExceptionCollection : IEnumerable<Type>
+#if !SpritelyRecipesProject
+    [System.Diagnostics.DebuggerStepThrough]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
+#pragma warning disable 0436
+#endif
+    public partial class ExceptionCollection : IEnumerable<Type>
     {
         private static readonly object Lock = new object();
         private readonly ICollection<Type> exceptions = new List<Type>();
@@ -112,4 +118,7 @@ namespace Spritely.Redo
             }
         }
     }
+#if !SpritelyRecipesProject
+#pragma warning restore 0436
+#endif
 }

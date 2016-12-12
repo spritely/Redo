@@ -18,7 +18,13 @@ namespace Spritely.Redo
     ///     Part of fluent API when user calls Try.RunningAsync() with an asynchronous function.
     /// </summary>
     /// <typeparam name="T">Type of the result of the call to f passed to Try.RunningAsync().</typeparam>
-    public sealed class TryFunctionAsync<T> : TryOperation<TryFunctionAsync<T>>
+#if !SpritelyRecipesProject
+    [System.Diagnostics.DebuggerStepThrough]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
+#pragma warning disable 0436
+#endif
+    public partial class TryFunctionAsync<T> : TryOperation<TryFunctionAsync<T>>
     {
         private readonly Func<Task<T>> f;
         internal Func<Func<Task<T>>, Func<T, bool>, TryConfiguration, Task<T>> _until = Run.UntilAsync;
@@ -56,4 +62,7 @@ namespace Spritely.Redo
             return Until(v => v != null);
         }
     }
+#if !SpritelyRecipesProject
+#pragma warning restore 0436
+#endif
 }

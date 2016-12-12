@@ -4,17 +4,17 @@
     <id>Spritely.Redo</id>
     <version>$version$</version>
     <title>Spritely.Redo</title>
-    <authors>Victor Robinson</authors>
-    <owners>Victor Robinson</owners>
+    <authors>Spritely Developers</authors>
+    <owners>Spritely Developers</owners>
     <language>en-US</language>
     <licenseUrl>https://github.com/spritely/Redo/blob/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/spritely/Redo</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Provides .NET exception handling retry logic via a fluent interface.</description>
-    <copyright>Copyright (C) 2015</copyright>
+    <copyright>Copyright (C) 2016</copyright>
     <tags>Spritely Redo fluent exception handling</tags>
   </metadata>
-    <files>
+  <files>
     <file src="Spritely.Redo.dll" target="lib\net45" />
     <file src="Spritely.Redo.pdb" target="lib\net45" />
   </files>

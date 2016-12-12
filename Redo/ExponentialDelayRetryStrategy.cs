@@ -17,7 +17,13 @@ namespace Spritely.Redo
     /// <summary>
     ///     A retry strategy that backs off with an exponential decay.
     /// </summary>
-    public class ExponentialDelayRetryStrategy : IRetryStrategy
+#if !SpritelyRecipesProject
+    [System.Diagnostics.DebuggerStepThrough]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
+#pragma warning disable 0436
+#endif
+    public partial class ExponentialDelayRetryStrategy : IRetryStrategy
     {
         internal Func<long, TimeSpan, double, TimeSpan> _calculateSleepTime = SafeDelay.CalculateExponentialDelaySleepTime;
 
@@ -83,4 +89,7 @@ namespace Spritely.Redo
             Thread.Sleep(sleepTime);
         }
     }
+#if !SpritelyRecipesProject
+#pragma warning restore 0436
+#endif
 }

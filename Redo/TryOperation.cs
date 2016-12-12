@@ -17,6 +17,12 @@ namespace Spritely.Redo
     ///     Base class for all Try... classes.
     /// </summary>
     /// <typeparam name="T">The type of operation (must be the type of the child class).</typeparam>
+#if !SpritelyRecipesProject
+    [System.Diagnostics.DebuggerStepThrough]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
+#pragma warning disable 0436
+#endif
     public class TryOperation<T> where T : TryOperation<T>
     {
         internal TryConfiguration _configuration;
@@ -66,4 +72,7 @@ namespace Spritely.Redo
             return this as T;
         }
     }
+#if !SpritelyRecipesProject
+#pragma warning restore 0436
+#endif
 }

@@ -16,5 +16,12 @@ namespace Spritely.Redo
     ///     Interface for reporting exceptions that occur during retry handling.
     /// </summary>
     /// <param name="exception">The exception.</param>
+#if !SpritelyRecipesProject
+    [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
+#pragma warning disable 0436
+#endif
     public delegate void ExceptionListener(Exception exception);
+#if !SpritelyRecipesProject
+#pragma warning restore 0436
+#endif
 }

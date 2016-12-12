@@ -16,7 +16,13 @@ namespace Spritely.Redo
     /// <summary>
     ///     Part of fluent API when user calls Try.Running() with an action.
     /// </summary>
-    public sealed class TryAction : TryOperation<TryAction>
+#if !SpritelyRecipesProject
+    [System.Diagnostics.DebuggerStepThrough]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
+#pragma warning disable 0436
+#endif
+    public partial class TryAction : TryOperation<TryAction>
     {
         private readonly Action f;
         internal Func<Func<object>, Func<object, bool>, TryConfiguration, object> _until = Run.Until;
@@ -53,4 +59,7 @@ namespace Spritely.Redo
             _until(function, _ => satisfied(), _configuration);
         }
     }
+#if !SpritelyRecipesProject
+#pragma warning restore 0436
+#endif
 }

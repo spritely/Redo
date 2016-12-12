@@ -16,8 +16,14 @@ namespace Spritely.Redo
     /// <summary>
     ///     The main entry point to start building a retryable function.
     /// </summary>
+#if !SpritelyRecipesProject
+    [System.Diagnostics.DebuggerStepThrough]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
+#pragma warning disable 0436
+#endif
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1716:IdentifiersShouldNotMatchKeywords", MessageId = "Try", Justification = "This is intentially designed to have a matching name as try keyword because it does a very similar thing and the name should make this obvious.")]
-    public static class Try
+    public static partial class Try
     {
         /// <summary>
         ///     Constructs a retryable function.
@@ -65,4 +71,7 @@ namespace Spritely.Redo
             return new TryFunctionAsync<T>(function);
         }
     }
+#if !SpritelyRecipesProject
+#pragma warning restore 0436
+#endif
 }

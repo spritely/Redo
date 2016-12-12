@@ -17,7 +17,13 @@ namespace Spritely.Redo
     /// <summary>
     ///     Container for all try operation default configuration options.
     /// </summary>
-    public static class TryDefault
+#if !SpritelyRecipesProject
+    [System.Diagnostics.DebuggerStepThrough]
+    [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+    [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
+#pragma warning disable 0436
+#endif
+    public static partial class TryDefault
     {
         internal static readonly object _Lock = new object();
         internal static ExceptionCollection _handles;
@@ -157,4 +163,7 @@ namespace Spritely.Redo
             }
         }
     }
+#if !SpritelyRecipesProject
+#pragma warning restore 0436
+#endif
 }
