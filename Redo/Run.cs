@@ -8,11 +8,10 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-
 namespace Spritely.Redo
 {
+    using System;
+    using System.Linq;
     using System.Threading.Tasks;
 
     internal static class Run

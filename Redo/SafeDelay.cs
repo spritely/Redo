@@ -8,10 +8,10 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace Spritely.Redo
 {
+    using System;
+
     internal class SafeDelay
     {
         internal static TimeSpan ConstrainBounds(double delay, double minimumBounds = 1,

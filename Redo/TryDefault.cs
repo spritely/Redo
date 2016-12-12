@@ -8,11 +8,11 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Linq;
-
 namespace Spritely.Redo
 {
+    using System;
+    using System.Linq;
+
     /// <summary>
     ///     Container for all try operation default configuration options.
     /// </summary>

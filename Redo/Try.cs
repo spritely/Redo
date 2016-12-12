@@ -8,10 +8,9 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace Spritely.Redo
 {
+    using System;
     using System.Threading.Tasks;
 
     /// <summary>

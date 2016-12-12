@@ -8,10 +8,10 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace Spritely.Redo
 {
+    using System;
+
     internal class TryConfiguration
     {
         public IRetryStrategy RetryStrategy { get; set; }

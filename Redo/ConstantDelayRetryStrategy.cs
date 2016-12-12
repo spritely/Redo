@@ -8,11 +8,11 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Threading;
-
 namespace Spritely.Redo
 {
+    using System;
+    using System.Threading;
+
     /// <summary>
     ///     A retry strategy with a constant delay.
     /// </summary>

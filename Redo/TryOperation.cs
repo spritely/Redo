@@ -8,10 +8,10 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace Spritely.Redo
 {
+    using System;
+
     /// <summary>
     ///     Base class for all Try... classes.
     /// </summary>

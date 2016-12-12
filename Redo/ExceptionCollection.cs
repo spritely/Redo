@@ -8,12 +8,12 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
 namespace Spritely.Redo
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+
     /// <summary>
     ///     Container for holding types of exceptions.
     /// </summary>

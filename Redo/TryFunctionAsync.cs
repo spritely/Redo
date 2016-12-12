@@ -8,11 +8,11 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-using System.Threading.Tasks;
-
 namespace Spritely.Redo
 {
+    using System;
+    using System.Threading.Tasks;
+
     /// <summary>
     ///     Part of fluent API when user calls Try.RunningAsync() with an asynchronous function.
     /// </summary>

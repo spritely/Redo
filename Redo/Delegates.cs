@@ -8,10 +8,10 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace Spritely.Redo
 {
+    using System;
+
     /// <summary>
     ///     Interface for reporting exceptions that occur during retry handling.
     /// </summary>

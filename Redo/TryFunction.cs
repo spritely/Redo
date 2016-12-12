@@ -8,10 +8,10 @@
 // </auto-generated>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System;
-
 namespace Spritely.Redo
 {
+    using System;
+
     /// <summary>
     ///     Part of fluent API when user calls Try.Running() with a function.
     /// </summary>
