@@ -45,7 +45,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Recipes.Redo.nuspec" />
     <None Include="Redo.nuspec" />
   </ItemGroup>
   <ItemGroup>
