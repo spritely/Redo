@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ConstantBackoffTest.cs">
+// <copyright file="ConstantBackOffTest.cs">
 //   Copyright (c) 2016. All rights reserved.
 //   Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -16,14 +16,14 @@ namespace Spritely.Redo.Test
     using NUnit.Framework;
 
     [TestFixture]
-    public class ConstantBackoffTest
+    public class ConstantBackOffTest
     {
         [Test]
         public void Now_delays_by_expected_time_when_execution_fails_once()
         {
             var times = 0;
             var expectedDelay = TimeSpan.FromMilliseconds(50);
-            var retryableOperation = Using.ConstantBackoff(expectedDelay).Run(
+            var retriableOperation = Using.ConstantBackOff(expectedDelay).Run(
                 () =>
                 {
                     times++;
@@ -35,7 +35,7 @@ namespace Spritely.Redo.Test
                 });
 
             var stopWatch = Stopwatch.StartNew();
-            retryableOperation.Now();
+            retriableOperation.Now();
             stopWatch.Stop();
 
             stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 50);
@@ -48,7 +48,7 @@ namespace Spritely.Redo.Test
             var times = 0;
             var delay = TimeSpan.FromMilliseconds(75);
             var expectedDelay = TimeSpan.FromMilliseconds(150);
-            var retryableOperation = Using.ConstantBackoff(delay).Run(
+            var retriableOperation = Using.ConstantBackOff(delay).Run(
                 () =>
                 {
                     times++;
@@ -60,7 +60,7 @@ namespace Spritely.Redo.Test
                 });
 
             var stopWatch = Stopwatch.StartNew();
-            retryableOperation.Now();
+            retriableOperation.Now();
             stopWatch.Stop();
 
             stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 75);
@@ -73,7 +73,7 @@ namespace Spritely.Redo.Test
             var times = 0;
             var delay = TimeSpan.FromMilliseconds(50);
             var expectedDelay = TimeSpan.FromMilliseconds(250);
-            var retryableOperation = Using.ConstantBackoff(delay).Run(
+            var retriableOperation = Using.ConstantBackOff(delay).Run(
                 () =>
                 {
                     times++;
@@ -85,7 +85,7 @@ namespace Spritely.Redo.Test
                 });
 
             var stopWatch = Stopwatch.StartNew();
-            retryableOperation.Now();
+            retriableOperation.Now();
             stopWatch.Stop();
 
             stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 150);

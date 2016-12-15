@@ -48,15 +48,15 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ExponentialBackoffTest.cs" />
-    <Compile Include="ProgressiveBackoffTest.cs" />
-    <Compile Include="LinearBackoffTest.cs" />
-    <Compile Include="ConstantBackoffTest.cs" />
-    <Compile Include="BackoffStrategyTest.cs" />
-    <Compile Include="RetryableActionAsyncTest.cs" />
-    <Compile Include="RetryableFunctionAsyncTest.cs" />
-    <Compile Include="RetryableFunctionTest.cs" />
-    <Compile Include="RetryableActionTest.cs" />
+    <Compile Include="ExponentialBackOffTest.cs" />
+    <Compile Include="ProgressiveBackOffTest.cs" />
+    <Compile Include="LinearBackOffTest.cs" />
+    <Compile Include="ConstantBackOffTest.cs" />
+    <Compile Include="BackOffStrategyTest.cs" />
+    <Compile Include="RetriableActionAsyncTest.cs" />
+    <Compile Include="RetriableFunctionAsyncTest.cs" />
+    <Compile Include="RetriableFunctionTest.cs" />
+    <Compile Include="RetriableActionTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

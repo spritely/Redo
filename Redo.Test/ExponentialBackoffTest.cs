@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="ExponentialBackoffTest.cs">
+// <copyright file="ExponentialBackOffTest.cs">
 //   Copyright (c) 2016. All rights reserved.
 //   Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -16,14 +16,14 @@ namespace Spritely.Redo.Test
     using NUnit.Framework;
 
     [TestFixture]
-    public class ExponentialBackoffTest
+    public class ExponentialBackOffTest
     {
         [Test]
         public void Now_delays_by_expected_time_when_execution_fails_once()
         {
             var times = 0;
             var expectedDelay = TimeSpan.FromMilliseconds(150);
-            var retryableOperation = Using.ExponentialBackoff(expectedDelay, scaleFactor: 10.0).Run(
+            var retriableOperation = Using.ExponentialBackOff(expectedDelay, scaleFactor: 10.0).Run(
                 () =>
                 {
                     times++;
@@ -35,7 +35,7 @@ namespace Spritely.Redo.Test
                 });
 
             var stopWatch = Stopwatch.StartNew();
-            retryableOperation.Now();
+            retriableOperation.Now();
             stopWatch.Stop();
 
             stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 50);
@@ -48,7 +48,7 @@ namespace Spritely.Redo.Test
             var times = 0;
             var delay = TimeSpan.FromMilliseconds(100);
             var expectedDelay = TimeSpan.FromMilliseconds(400); // 100 + (3^1 * 100)
-            var retryableOperation = Using.ExponentialBackoff(delay, scaleFactor: 3.0).Run(
+            var retriableOperation = Using.ExponentialBackOff(delay, scaleFactor: 3.0).Run(
                 () =>
                 {
                     times++;
@@ -60,7 +60,7 @@ namespace Spritely.Redo.Test
                 });
 
             var stopWatch = Stopwatch.StartNew();
-            retryableOperation.Now();
+            retriableOperation.Now();
             stopWatch.Stop();
 
             stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 75);
@@ -73,7 +73,7 @@ namespace Spritely.Redo.Test
             var times = 0;
             var delay = TimeSpan.FromMilliseconds(20);
             var expectedDelay = TimeSpan.FromMilliseconds(620); // 20 + (20 * 2) + (20 * 4) + (20 * 8) + (20 * 16)
-            var retryableOperation = Using.ExponentialBackoff(delay).Run(
+            var retriableOperation = Using.ExponentialBackOff(delay).Run(
                 () =>
                 {
                     times++;
@@ -85,7 +85,7 @@ namespace Spritely.Redo.Test
                 });
 
             var stopWatch = Stopwatch.StartNew();
-            retryableOperation.Now();
+            retriableOperation.Now();
             stopWatch.Stop();
 
             stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 150);

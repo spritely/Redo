@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RetryableFunctionAsyncTest.cs">
+// <copyright file="RetriableFunctionAsyncTest.cs">
 //   Copyright (c) 2016. All rights reserved.
 //   Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -19,13 +19,13 @@ namespace Spritely.Redo.Test
     using NUnit.Framework;
 
     [TestFixture]
-    public class RetryableFunctionAsyncTest
+    public class RetriableFunctionAsyncTest
     {
         [Test]
         public async Task Now_does_not_delay_when_first_execution_succeeds()
         {
             var called = false;
-            var retryableOperation = new BackoffStrategy(
+            var retriableOperation = new BackOffStrategy(
                 _ =>
                 {
                     called = true;
@@ -33,7 +33,7 @@ namespace Spritely.Redo.Test
                 }).RunAsync(() => Task.FromResult(new object()));
 
             var stopWatch = Stopwatch.StartNew();
-            await retryableOperation.Now();
+            await retriableOperation.Now();
             stopWatch.Stop();
 
             stopWatch.Elapsed.Should().BeLessThan(TimeSpan.FromMilliseconds(200));
@@ -45,7 +45,7 @@ namespace Spritely.Redo.Test
         {
             var maxRetries = 13;
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .WithMaxRetries(maxRetries)
                 .RunAsync<object>(() =>
                     {
@@ -53,7 +53,7 @@ namespace Spritely.Redo.Test
                         throw new InvalidOperationException();
                     });
 
-            AssertThrowsAggregateExceptionWithSingleInner<InvalidOperationException>(retryableOperation);
+            AssertThrowsAggregateExceptionWithSingleInner<InvalidOperationException>(retriableOperation);
             times.Should().Be(maxRetries + 1); // Initial call and maxRetries retry attempts
         }
 
@@ -63,7 +63,7 @@ namespace Spritely.Redo.Test
             var retries = 4;
             var times = 0;
             var called = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .WithReporter(
                     ex =>
                     {
@@ -83,7 +83,7 @@ namespace Spritely.Redo.Test
                     throw new InvalidOperationException(times.ToString());
                 });
 
-            await retryableOperation.Now();
+            await retriableOperation.Now();
             called.Should().Be(retries);
         }
 
@@ -91,7 +91,7 @@ namespace Spritely.Redo.Test
         public async Task Now_retries_on_all_exceptions_when_unspecified()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .RunAsync(() =>
                 {
                     times++;
@@ -107,7 +107,7 @@ namespace Spritely.Redo.Test
                     return Task.FromResult(new object());
                 });
 
-            await retryableOperation.Now();
+            await retriableOperation.Now();
             times.Should().Be(3);
         }
 
@@ -115,7 +115,7 @@ namespace Spritely.Redo.Test
         public void Now_only_retries_specified_exceptions_when_any_specified()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .RetryOn<InconclusiveException>()
                 .RetryOn<InvalidOperationException>()
                 .RunAsync<object>(() =>
@@ -130,18 +130,18 @@ namespace Spritely.Redo.Test
                             throw new InvalidOperationException();
                     }
 
-                    throw new ArgumentException();
+                    throw new ArgumentException("ignored");
                 });
 
-            AssertThrowsAggregateExceptionWithSingleInner<ArgumentException>(retryableOperation);
+            AssertThrowsAggregateExceptionWithSingleInner<ArgumentException>(retriableOperation);
             times.Should().Be(3);
         }
 
         [Test]
-        public void Now_throws_when_encountering_an_unhandleable_exception()
+        public void Now_throws_when_encountering_a_throw_on_exception()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .ThrowOn<ArgumentException>()
                 .RunAsync<object>(() =>
                 {
@@ -155,18 +155,18 @@ namespace Spritely.Redo.Test
                             throw new InvalidOperationException();
                     }
 
-                    throw new ArgumentException();
+                    throw new ArgumentException("ignored");
                 });
 
-            AssertThrowsAggregateExceptionWithSingleInner<ArgumentException>(retryableOperation);
+            AssertThrowsAggregateExceptionWithSingleInner<ArgumentException>(retriableOperation);
             times.Should().Be(3);
         }
 
         [Test]
-        public void Now_throws_when_encountering_any_unhandleable_exception()
+        public void Now_throws_when_encountering_any_throw_on_exception()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .ThrowOn<ArgumentException>()
                 .ThrowOn<AccessViolationException>()
                 .RunAsync<object>(() =>
@@ -183,18 +183,18 @@ namespace Spritely.Redo.Test
                             throw new AccessViolationException();
                     }
 
-                    throw new ArgumentException();
+                    throw new ArgumentException("ignored");
                 });
 
-            AssertThrowsAggregateExceptionWithSingleInner<AccessViolationException>(retryableOperation);
+            AssertThrowsAggregateExceptionWithSingleInner<AccessViolationException>(retriableOperation);
             times.Should().Be(3);
         }
 
         [Test]
-        public void Now_gives_priority_to_unhandleable_exception_over_handleable_exception()
+        public void Now_gives_priority_to_throw_on_exception_over_retry_on_exception()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .ThrowOn<ArgumentException>()
                 .ThrowOn<AccessViolationException>()
                 .RetryOn<InconclusiveException>()
@@ -214,10 +214,10 @@ namespace Spritely.Redo.Test
                             throw new AccessViolationException();
                     }
 
-                    throw new ArgumentException();
+                    throw new ArgumentException("ignored");
                 });
 
-            AssertThrowsAggregateExceptionWithSingleInner<AccessViolationException>(retryableOperation);
+            AssertThrowsAggregateExceptionWithSingleInner<AccessViolationException>(retriableOperation);
             times.Should().Be(3);
         }
 
@@ -231,22 +231,22 @@ namespace Spritely.Redo.Test
             var exceptionsToThrow = new List<Type>();
             Func<Task<object>> operation = () => null;
 
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunctionAsync<object>(null, maxRetries, report, exceptionsToRetry, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new RetryableFunctionAsync<object>(getDelay, 0, report, exceptionsToRetry, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new RetryableFunctionAsync<object>(getDelay, -1, report, exceptionsToRetry, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunctionAsync<object>(getDelay, maxRetries, null, exceptionsToRetry, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunctionAsync<object>(getDelay, maxRetries, report, null, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunctionAsync<object>(getDelay, maxRetries, report, exceptionsToRetry, null, operation));
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunctionAsync<object>(getDelay, maxRetries, report, exceptionsToRetry, exceptionsToThrow, null));
+            Assert.Throws<ArgumentNullException>(() => new RetriableFunctionAsync<object>(null, maxRetries, report, exceptionsToRetry, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RetriableFunctionAsync<object>(getDelay, 0, report, exceptionsToRetry, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RetriableFunctionAsync<object>(getDelay, -1, report, exceptionsToRetry, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentNullException>(() => new RetriableFunctionAsync<object>(getDelay, maxRetries, null, exceptionsToRetry, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentNullException>(() => new RetriableFunctionAsync<object>(getDelay, maxRetries, report, null, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentNullException>(() => new RetriableFunctionAsync<object>(getDelay, maxRetries, report, exceptionsToRetry, null, operation));
+            Assert.Throws<ArgumentNullException>(() => new RetriableFunctionAsync<object>(getDelay, maxRetries, report, exceptionsToRetry, exceptionsToThrow, null));
         }
 
         [Test]
         public void Until_throws_on_null_argument()
         {
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .RunAsync(() => Task.FromResult(new object()));
             
-            Assert.Throws<ArgumentNullException>(() => retryableOperation.Until(null));
+            Assert.Throws<ArgumentNullException>(() => retriableOperation.Until(null));
         }
 
         [Test]
@@ -254,7 +254,7 @@ namespace Spritely.Redo.Test
         {
             var maxRetries = 6;
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .WithMaxRetries(maxRetries)
                 .RunAsync(() => Task.FromResult(new object()))
                 .Until(
@@ -264,7 +264,7 @@ namespace Spritely.Redo.Test
                         return false;
                     });
 
-            AssertThrowsAggregateExceptionWithSingleInner<TimeoutException>(retryableOperation);
+            AssertThrowsAggregateExceptionWithSingleInner<TimeoutException>(retriableOperation);
             times.Should().Be(maxRetries + 1); // Initial call and maxRetries retry attempts
         }
 
@@ -273,7 +273,7 @@ namespace Spritely.Redo.Test
         {
             var retries = 8;
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .RunAsync(() => Task.FromResult(new object()))
                 .Until(
                     _ =>
@@ -282,7 +282,7 @@ namespace Spritely.Redo.Test
                         return times == retries;
                     });
 
-            await retryableOperation.Now();
+            await retriableOperation.Now();
             times.Should().Be(retries);
         }
 
@@ -293,7 +293,7 @@ namespace Spritely.Redo.Test
             var retries2 = 2;
             var times1 = 0;
             var times2 = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .RunAsync(() => Task.FromResult(new object()))
                 .Until(
                     _ =>
@@ -308,7 +308,7 @@ namespace Spritely.Redo.Test
                         return times2 == retries2;
                     });
 
-            await retryableOperation.Now();
+            await retriableOperation.Now();
             times1.Should().Be(retries2);
             times2.Should().Be(retries2);
         }
@@ -317,10 +317,10 @@ namespace Spritely.Redo.Test
         public async Task Now_returns_result_of_operation_when_successful()
         {
             var expectedInstance = new object();
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .RunAsync(() => Task.FromResult(expectedInstance));
 
-            var actualInstance = await retryableOperation.Now();
+            var actualInstance = await retriableOperation.Now();
 
             actualInstance.Should().BeSameAs(expectedInstance);
         }
@@ -329,7 +329,7 @@ namespace Spritely.Redo.Test
         public async Task Now_passes_result_of_operation_to_until()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .RunAsync(() => Task.FromResult(++times))
                 .Until(
                     i =>
@@ -338,15 +338,15 @@ namespace Spritely.Redo.Test
                         return i == 5;
                     });
 
-            var result = await retryableOperation.Now();
+            var result = await retriableOperation.Now();
 
             result.Should().Be(5);
         }
 
-        private void AssertThrowsAggregateExceptionWithSingleInner<TException>(RetryableFunctionAsync<object> retryableOperation)
+        private void AssertThrowsAggregateExceptionWithSingleInner<TException>(RetriableFunctionAsync<object> retriableOperation)
             where TException : Exception
         {
-            var exception = Assert.Throws<AggregateException>(() => Task.Run(retryableOperation.Now).Wait());
+            var exception = Assert.Throws<AggregateException>(() => Task.Run(retriableOperation.Now).Wait());
             exception.InnerExceptions.Count.Should().Be(1);
             exception.InnerExceptions.First().GetType().Should().Be<TException>();
         }

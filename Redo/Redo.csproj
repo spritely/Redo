@@ -35,12 +35,12 @@
     <DocumentationFile>bin\Release\Spritely.Redo.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="BackoffStrategy.cs" />
-    <Compile Include="RetryableActionAsync.cs" />
-    <Compile Include="RetryableAction.cs" />
-    <Compile Include="RetryableFunctionAsync.cs" />
+    <Compile Include="BackOffStrategy.cs" />
+    <Compile Include="RetriableActionAsync.cs" />
+    <Compile Include="RetriableAction.cs" />
+    <Compile Include="RetriableFunctionAsync.cs" />
     <Compile Include="Using.cs" />
-    <Compile Include="RetryableFunction.cs" />
+    <Compile Include="RetriableFunction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

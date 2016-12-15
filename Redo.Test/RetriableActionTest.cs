@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RetryableFunctionTest.cs">
+// <copyright file="RetriableActionTest.cs">
 //   Copyright (c) 2016. All rights reserved.
 //   Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -13,25 +13,26 @@ namespace Spritely.Redo.Test
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using FluentAssertions;
     using NUnit.Framework;
 
     [TestFixture]
-    public class RetryableFunctionTest
+    public class RetriableActionTest
     {
         [Test]
         public void Now_does_not_delay_when_first_execution_succeeds()
         {
             var called = false;
-            var retryableOperation = new BackoffStrategy(
+            var retriableOperation = new BackOffStrategy(
                 _ =>
                 {
                     called = true;
                     return TimeSpan.FromSeconds(10);
-                }).Run(() => new object());
+                }).Run(() => { });
 
             var stopWatch = Stopwatch.StartNew();
-            retryableOperation.Now();
+            retriableOperation.Now();
             stopWatch.Stop();
 
             stopWatch.Elapsed.Should().BeLessThan(TimeSpan.FromMilliseconds(200));
@@ -43,15 +44,15 @@ namespace Spritely.Redo.Test
         {
             var maxRetries = 13;
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .WithMaxRetries(maxRetries)
-                .Run<object>(() =>
+                .Run(() =>
                     {
                         times++;
                         throw new InvalidOperationException();
                     });
 
-            Assert.Throws<InvalidOperationException>(() => retryableOperation.Now());
+            Assert.Throws<InvalidOperationException>(() => retriableOperation.Now());
             times.Should().Be(maxRetries + 1); // Initial call and maxRetries retry attempts
         }
 
@@ -61,13 +62,13 @@ namespace Spritely.Redo.Test
             var retries = 4;
             var times = 0;
             var called = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .WithReporter(
                     ex =>
                     {
                         called++;
                         ex.Should().BeOfType<InvalidOperationException>();
-                        ex.Message.Should().Be(times.ToString());
+                        ex.Message.Should().Be(times.ToString(CultureInfo.InvariantCulture));
                     })
                 .Run(() =>
                 {
@@ -75,13 +76,13 @@ namespace Spritely.Redo.Test
 
                     if (times > retries)
                     {
-                        return new object();
+                        return;
                     }
 
-                    throw new InvalidOperationException(times.ToString());
+                    throw new InvalidOperationException(times.ToString(CultureInfo.InvariantCulture));
                 });
 
-            retryableOperation.Now();
+            retriableOperation.Now();
             called.Should().Be(retries);
         }
 
@@ -89,7 +90,31 @@ namespace Spritely.Redo.Test
         public void Now_retries_on_all_exceptions_when_unspecified()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
+                .Run(() =>
+                {
+                    times++;
+
+                    switch (times)
+                    {
+                        case 1:
+                            throw new InconclusiveException("Test");
+                        case 2:
+                            throw new InvalidOperationException();
+                    }
+                });
+
+            retriableOperation.Now();
+            times.Should().Be(3);
+        }
+
+        [Test]
+        public void Now_only_retries_specified_exceptions_when_any_specified()
+        {
+            var times = 0;
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
+                .RetryOn<InconclusiveException>()
+                .RetryOn<InvalidOperationException>()
                 .Run(() =>
                 {
                     times++;
@@ -102,46 +127,20 @@ namespace Spritely.Redo.Test
                             throw new InvalidOperationException();
                     }
 
-                    return new object();
+                    throw new ArgumentException("ignored");
                 });
 
-            retryableOperation.Now();
+            Assert.Throws<ArgumentException>(() => retriableOperation.Now());
             times.Should().Be(3);
         }
 
         [Test]
-        public void Now_only_retries_specified_exceptions_when_any_specified()
+        public void Now_throws_when_encountering_a_throw_on_exception()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
-                .RetryOn<InconclusiveException>()
-                .RetryOn<InvalidOperationException>()
-                .Run<object>(() =>
-                {
-                    times++;
-
-                    switch (times)
-                    {
-                        case 1:
-                            throw new InconclusiveException("Test");
-                        case 2:
-                            throw new InvalidOperationException();
-                    }
-
-                    throw new ArgumentException();
-                });
-
-            Assert.Throws<ArgumentException>(() => retryableOperation.Now());
-            times.Should().Be(3);
-        }
-
-        [Test]
-        public void Now_throws_when_encountering_an_unhandleable_exception()
-        {
-            var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .ThrowOn<ArgumentException>()
-                .Run<object>(() =>
+                .Run(() =>
                 {
                     times++;
 
@@ -153,21 +152,21 @@ namespace Spritely.Redo.Test
                             throw new InvalidOperationException();
                     }
 
-                    throw new ArgumentException();
+                    throw new ArgumentException("ignored");
                 });
 
-            Assert.Throws<ArgumentException>(() => retryableOperation.Now());
+            Assert.Throws<ArgumentException>(() => retriableOperation.Now());
             times.Should().Be(3);
         }
 
         [Test]
-        public void Now_throws_when_encountering_any_unhandleable_exception()
+        public void Now_throws_when_encountering_any_throw_on_exception()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .ThrowOn<ArgumentException>()
                 .ThrowOn<AccessViolationException>()
-                .Run<object>(() =>
+                .Run(() =>
                 {
                     times++;
 
@@ -181,24 +180,24 @@ namespace Spritely.Redo.Test
                             throw new AccessViolationException();
                     }
 
-                    throw new ArgumentException();
+                    throw new ArgumentException("ignored");
                 });
 
-            Assert.Throws<AccessViolationException>(() => retryableOperation.Now());
+            Assert.Throws<AccessViolationException>(() => retriableOperation.Now());
             times.Should().Be(3);
         }
 
         [Test]
-        public void Now_gives_priority_to_unhandleable_exception_over_handleable_exception()
+        public void Now_gives_priority_to_throw_on_exception_over_retry_on_exception()
         {
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .ThrowOn<ArgumentException>()
                 .ThrowOn<AccessViolationException>()
                 .RetryOn<InconclusiveException>()
                 .RetryOn<InvalidOperationException>()
                 .RetryOn<AccessViolationException>()
-                .Run<object>(() =>
+                .Run(() =>
                 {
                     times++;
 
@@ -212,10 +211,10 @@ namespace Spritely.Redo.Test
                             throw new AccessViolationException();
                     }
 
-                    throw new ArgumentException();
+                    throw new ArgumentException("ignored");
                 });
 
-            Assert.Throws<AccessViolationException>(() => retryableOperation.Now());
+            Assert.Throws<AccessViolationException>(() => retriableOperation.Now());
             times.Should().Be(3);
         }
 
@@ -227,24 +226,24 @@ namespace Spritely.Redo.Test
             Action<Exception> report = _ => { };
             var exceptionsToRetry = new List<Type>();
             var exceptionsToThrow = new List<Type>();
-            Func<object> operation = () => null;
+            Action operation = () => { };
 
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunction<object>(null, maxRetries, report, exceptionsToRetry, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new RetryableFunction<object>(getDelay, 0, report, exceptionsToRetry, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentOutOfRangeException>(() => new RetryableFunction<object>(getDelay, -1, report, exceptionsToRetry, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunction<object>(getDelay, maxRetries, null, exceptionsToRetry, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunction<object>(getDelay, maxRetries, report, null, exceptionsToThrow, operation));
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunction<object>(getDelay, maxRetries, report, exceptionsToRetry, null, operation));
-            Assert.Throws<ArgumentNullException>(() => new RetryableFunction<object>(getDelay, maxRetries, report, exceptionsToRetry, exceptionsToThrow, null));
+            Assert.Throws<ArgumentNullException>(() => new RetriableAction(null, maxRetries, report, exceptionsToRetry, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RetriableAction(getDelay, 0, report, exceptionsToRetry, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentOutOfRangeException>(() => new RetriableAction(getDelay, -1, report, exceptionsToRetry, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentNullException>(() => new RetriableAction(getDelay, maxRetries, null, exceptionsToRetry, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentNullException>(() => new RetriableAction(getDelay, maxRetries, report, null, exceptionsToThrow, operation));
+            Assert.Throws<ArgumentNullException>(() => new RetriableAction(getDelay, maxRetries, report, exceptionsToRetry, null, operation));
+            Assert.Throws<ArgumentNullException>(() => new RetriableAction(getDelay, maxRetries, report, exceptionsToRetry, exceptionsToThrow, null));
         }
 
         [Test]
         public void Until_throws_on_null_argument()
         {
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
-                .Run(() => new object());
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
+                .Run(() => { });
             
-            Assert.Throws<ArgumentNullException>(() => retryableOperation.Until(null));
+            Assert.Throws<ArgumentNullException>(() => retriableOperation.Until(null));
         }
 
         [Test]
@@ -252,17 +251,17 @@ namespace Spritely.Redo.Test
         {
             var maxRetries = 6;
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
                 .WithMaxRetries(maxRetries)
-                .Run(() => new object())
+                .Run(() => { })
                 .Until(
-                    _ =>
+                    () =>
                     {
                         times++;
                         return false;
                     });
 
-            Assert.Throws<TimeoutException>(() => retryableOperation.Now());
+            Assert.Throws<TimeoutException>(() => retriableOperation.Now());
             times.Should().Be(maxRetries + 1); // Initial call and maxRetries retry attempts
         }
 
@@ -271,16 +270,16 @@ namespace Spritely.Redo.Test
         {
             var retries = 8;
             var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
-                .Run(() => new object())
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
+                .Run(() => { })
                 .Until(
-                    _ =>
+                    () =>
                     {
                         times++;
                         return times == retries;
                     });
 
-            retryableOperation.Now();
+            retriableOperation.Now();
             times.Should().Be(retries);
         }
 
@@ -291,54 +290,24 @@ namespace Spritely.Redo.Test
             var retries2 = 2;
             var times1 = 0;
             var times2 = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
-                .Run(() => new object())
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
+                .Run(() => { })
                 .Until(
-                    _ =>
+                    () =>
                     {
                         times1++;
                         return times1 == retries1;
                     })
                 .Until(
-                    _ =>
+                    () =>
                     {
                         times2++;
                         return times2 == retries2;
                     });
 
-            retryableOperation.Now();
+            retriableOperation.Now();
             times1.Should().Be(retries2);
             times2.Should().Be(retries2);
-        }
-
-        [Test]
-        public void Now_returns_result_of_operation_when_successful()
-        {
-            var expectedInstance = new object();
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
-                .Run(() => expectedInstance);
-
-            var actualInstance = retryableOperation.Now();
-
-            actualInstance.Should().BeSameAs(expectedInstance);
-        }
-
-        [Test]
-        public void Now_passes_result_of_operation_to_until()
-        {
-            var times = 0;
-            var retryableOperation = Using.ConstantBackoff(TimeSpan.FromMilliseconds(10))
-                .Run(() => ++times)
-                .Until(
-                    i =>
-                    {
-                        i.Should().Be(times);
-                        return i == 5;
-                    });
-
-            var result = retryableOperation.Now();
-
-            result.Should().Be(5);
         }
     }
 }

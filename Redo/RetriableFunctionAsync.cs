@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RetryableFunctionAsync.cs">
+// <copyright file="RetriableFunctionAsync.cs">
 //   Copyright (c) 2016. All rights reserved.
 //   Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -16,7 +16,7 @@ namespace Spritely.Redo
     using System.Threading.Tasks;
 
     /// <summary>
-    ///     Represents a retryable operation which can accumulate terminating conditions using .Until(...)
+    ///     Represents a retriable operation which can accumulate terminating conditions using .Until(...)
     ///     or perform the execution using .Now().
     /// </summary>
     /// <typeparam name="T">The type of operation (must be the type of the child class).</typeparam>
@@ -26,7 +26,7 @@ namespace Spritely.Redo
     [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
 #pragma warning disable 0436
 #endif
-    internal partial class RetryableFunctionAsync<T>
+    internal partial class RetriableFunctionAsync<T>
     {
         private readonly Func<long, TimeSpan> getDelay;
         private readonly long maxRetries;
@@ -37,7 +37,7 @@ namespace Spritely.Redo
         private readonly ICollection<Func<T, bool>> untilValids = new List<Func<T, bool>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RetryableFunctionAsync{T}"/> class.
+        /// Initializes a new instance of the <see cref="RetriableFunctionAsync{T}"/> class.
         /// </summary>
         /// <param name="getDelay">The function that determines the next delay time given the current attempt number.</param>
         /// <param name="maxRetries">The maximum number of retries to perform the operation before giving up and throwing the underlying exception.</param>
@@ -45,7 +45,7 @@ namespace Spritely.Redo
         /// <param name="exceptionsToRetryOn">The exceptions to retry on.</param>
         /// <param name="exceptionsToThrowOn">The exceptions to throw on.</param>
         /// <param name="operation">The operation to execute and retry as needed.</param>
-        public RetryableFunctionAsync(Func<long, TimeSpan> getDelay, long maxRetries, Action<Exception> report, ICollection<Type> exceptionsToRetryOn, ICollection<Type> exceptionsToThrowOn, Func<Task<T>> operation)
+        public RetriableFunctionAsync(Func<long, TimeSpan> getDelay, long maxRetries, Action<Exception> report, ICollection<Type> exceptionsToRetryOn, ICollection<Type> exceptionsToThrowOn, Func<Task<T>> operation)
         {
             if (getDelay == null)
             {
@@ -91,7 +91,7 @@ namespace Spritely.Redo
         /// </summary>
         /// <param name="isValid">The function to call to verify validity.</param>
         /// <returns>This instance for chaining other operations.</returns>
-        public RetryableFunctionAsync<T> Until(Func<T, bool> isValid)
+        public RetriableFunctionAsync<T> Until(Func<T, bool> isValid)
         {
             if (isValid == null)
             {
@@ -104,7 +104,7 @@ namespace Spritely.Redo
         }
 
         /// <summary>
-        /// Performs the asynchronous operation Now.
+        /// Performs the asynchronous operation Now retrying as appropriate.
         /// </summary>
         /// <returns>The task being awaited for managing the asynchronous operation.</returns>
         public async Task<T> Now()

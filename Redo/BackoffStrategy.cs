@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BackoffStrategy.cs">
+// <copyright file="BackOffStrategy.cs">
 //   Copyright (c) 2016. All rights reserved.
 //   Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -15,8 +15,8 @@ namespace Spritely.Redo
     using System.Threading.Tasks;
 
     /// <summary>
-    ///     Main interface for building up the backoff strategy before entering the operation context
-    ///     for running retryable operations.
+    ///     Main interface for building up the back-off strategy before entering the operation context
+    ///     for running retriable operations.
     /// </summary>
 #if !SpritelyRecipesProject
     [System.Diagnostics.DebuggerStepThrough]
@@ -24,7 +24,7 @@ namespace Spritely.Redo
     [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
 #pragma warning disable 0436
 #endif
-    internal partial class BackoffStrategy
+    internal partial class BackOffStrategy
     {
         private readonly Func<long, TimeSpan> getDelay;
         private readonly ICollection<Type> exceptionsToRetryOn = new List<Type>();
@@ -33,10 +33,10 @@ namespace Spritely.Redo
         private Action<Exception> report = ex => { };
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="BackoffStrategy"/> class.
+        /// Initializes a new instance of the <see cref="BackOffStrategy"/> class.
         /// </summary>
-        /// <param name="getDelay">The function that determines the next delay given the current attempt number - the backoff strategy.</param>
-        public BackoffStrategy(Func<long, TimeSpan> getDelay)
+        /// <param name="getDelay">The function that determines the next delay given the current attempt number - the back-off strategy.</param>
+        public BackOffStrategy(Func<long, TimeSpan> getDelay)
         {
             if (getDelay == null)
             {
@@ -53,7 +53,8 @@ namespace Spritely.Redo
         /// <returns>
         /// This instance for chaining.
         /// </returns>
-        public BackoffStrategy WithMaxRetries(long maxRetries)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "maxRetries", Justification = "This method is designed to set the internal variable by the same name.")]
+        public BackOffStrategy WithMaxRetries(long maxRetries)
         {
             if (maxRetries < 1)
             {
@@ -72,7 +73,8 @@ namespace Spritely.Redo
         /// <returns>
         /// This instance for chaining.
         /// </returns>
-        public BackoffStrategy WithReporter(Action<Exception> report)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1500:VariableNamesShouldNotMatchFieldNames", MessageId = "report", Justification = "This method is designed to set the internal variable by the same name.")]
+        public BackOffStrategy WithReporter(Action<Exception> report)
         {
             if (report == null)
             {
@@ -90,7 +92,7 @@ namespace Spritely.Redo
         /// </summary>
         /// <typeparam name="TException">The type of the exception to retry on.</typeparam>
         /// <returns>This instance for chaining.</returns>
-        public BackoffStrategy RetryOn<TException>() where TException : Exception
+        public BackOffStrategy RetryOn<TException>() where TException : Exception
         {
             exceptionsToRetryOn.Add(typeof(TException));
 
@@ -102,7 +104,7 @@ namespace Spritely.Redo
         /// </summary>
         /// <typeparam name="TException">The type of the exception to throw on.</typeparam>
         /// <returns>This instance for chaining.</returns>
-        public BackoffStrategy ThrowOn<TException>() where TException : Exception
+        public BackOffStrategy ThrowOn<TException>() where TException : Exception
         {
             exceptionsToThrowOn.Add(typeof(TException));
 
@@ -113,30 +115,30 @@ namespace Spritely.Redo
         /// Runs the specified operation.
         /// </summary>
         /// <param name="operation">The operation to execute and retry as needed.</param>
-        /// <returns>A retryable function context.</returns>
-        public RetryableAction Run(Action operation)
+        /// <returns>A retriable function context.</returns>
+        public RetriableAction Run(Action operation)
         {
             if (operation == null)
             {
                 throw new ArgumentNullException("operation");
             }
 
-            return new RetryableAction(getDelay, maxRetries, report, exceptionsToRetryOn, exceptionsToThrowOn, operation);
+            return new RetriableAction(getDelay, maxRetries, report, exceptionsToRetryOn, exceptionsToThrowOn, operation);
         }
 
         /// <summary>
         /// Runs the specified operation.
         /// </summary>
         /// <param name="operation">The operation to execute and retry as needed.</param>
-        /// <returns>A retryable function context.</returns>
-        public RetryableActionAsync RunAsync(Func<Task> operation)
+        /// <returns>A retriable function context.</returns>
+        public RetriableActionAsync RunAsync(Func<Task> operation)
         {
             if (operation == null)
             {
                 throw new ArgumentNullException("operation");
             }
 
-            return new RetryableActionAsync(getDelay, maxRetries, report, exceptionsToRetryOn, exceptionsToThrowOn, operation);
+            return new RetriableActionAsync(getDelay, maxRetries, report, exceptionsToRetryOn, exceptionsToThrowOn, operation);
         }
 
         /// <summary>
@@ -144,31 +146,31 @@ namespace Spritely.Redo
         /// </summary>
         /// <typeparam name="T">The type of result returned from the operation.</typeparam>
         /// <param name="operation">The operation to execute and retry as needed.</param>
-        /// <returns>A retryable function context.</returns>
-        public RetryableFunction<T> Run<T>(Func<T> operation)
+        /// <returns>A retriable function context.</returns>
+        public RetriableFunction<T> Run<T>(Func<T> operation)
         {
             if (operation == null)
             {
                 throw new ArgumentNullException("operation");
             }
 
-            return new RetryableFunction<T>(getDelay, maxRetries, report, exceptionsToRetryOn, exceptionsToThrowOn, operation);
+            return new RetriableFunction<T>(getDelay, maxRetries, report, exceptionsToRetryOn, exceptionsToThrowOn, operation);
         }
 
         /// <summary>
-        /// Runs the specified asyncronous operation
+        /// Runs the specified asyncronous operation.
         /// </summary>
         /// <typeparam name="T">The type of result returned from the operation.</typeparam>
         /// <param name="operation">The operation to execute and retry as needed.</param>
-        /// <returns>A retryable function context.</returns>
-        public RetryableFunctionAsync<T> RunAsync<T>(Func<Task<T>> operation)
+        /// <returns>A retriable function context.</returns>
+        public RetriableFunctionAsync<T> RunAsync<T>(Func<Task<T>> operation)
         {
             if (operation == null)
             {
                 throw new ArgumentNullException("operation");
             }
 
-            return new RetryableFunctionAsync<T>(getDelay, maxRetries, report, exceptionsToRetryOn, exceptionsToThrowOn, operation);
+            return new RetriableFunctionAsync<T>(getDelay, maxRetries, report, exceptionsToRetryOn, exceptionsToThrowOn, operation);
         }
     }
 #if !SpritelyRecipesProject

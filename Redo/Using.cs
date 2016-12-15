@@ -13,7 +13,7 @@ namespace Spritely.Redo
     using System;
 
     /// <summary>
-    ///     The main entry point to start building a retryable function.
+    ///     The main entry point to start building a retriable function.
     /// </summary>
 #if !SpritelyRecipesProject
     [System.Diagnostics.DebuggerStepThrough]
@@ -25,13 +25,13 @@ namespace Spritely.Redo
     internal static partial class Using
     {
         /// <summary>
-        /// Begins an retryable operation using the constant delay backoff strategy.
+        /// Begins an retriable operation using the constant delay back-off strategy.
         /// </summary>
         /// <param name="delay">The delay.</param>
-        /// <returns>A backoff strategy context.</returns>
-        public static BackoffStrategy ConstantBackoff(TimeSpan delay)
+        /// <returns>A back-off strategy context.</returns>
+        public static BackOffStrategy ConstantBackOff(TimeSpan delay)
         {
-            return new BackoffStrategy(_ =>
+            return new BackOffStrategy(_ =>
             {
                 var sleepTime = TimeSpan.FromMilliseconds(Math.Max(1, delay.TotalMilliseconds));
 
@@ -40,17 +40,17 @@ namespace Spritely.Redo
         }
 
         /// <summary>
-        /// Begins an retryable operation using the linear delay backoff strategy.
+        /// Begins an retriable operation using the linear delay back-off strategy.
         /// initial + (delta * attempt) where attempt is 0-based.
         /// </summary>
         /// <param name="initial">The initial delay.</param>
-        /// <param name="delta">The delta to adjust delay by with each backoff.</param>
+        /// <param name="delta">The delta to adjust delay by with each back-off.</param>
         /// <returns>
-        /// A backoff strategy context.
+        /// A back-off strategy context.
         /// </returns>
-        public static BackoffStrategy LinearBackoff(TimeSpan initial, TimeSpan delta)
+        public static BackOffStrategy LinearBackOff(TimeSpan initial, TimeSpan delta)
         {
-            return new BackoffStrategy(
+            return new BackOffStrategy(
                 attempt =>
                 {
                     var factor = attempt * delta.TotalMilliseconds;
@@ -63,16 +63,16 @@ namespace Spritely.Redo
         }
 
         /// <summary>
-        /// Begins an retryable operation using the linear delay backoff strategy.
+        /// Begins an retriable operation using the linear delay back-off strategy.
         /// delay + (initial * attempt) where attempt is 0-based.
         /// </summary>
-        /// <param name="delay">The initial delay and delta to adjust initial by with each backoff.</param>
+        /// <param name="delay">The initial delay and delta to adjust initial by with each back-off.</param>
         /// <returns>
-        /// A backoff strategy context.
+        /// A back-off strategy context.
         /// </returns>
-        public static BackoffStrategy LinearBackoff(TimeSpan delay)
+        public static BackOffStrategy LinearBackOff(TimeSpan delay)
         {
-            return new BackoffStrategy(
+            return new BackOffStrategy(
                 attempt =>
                 {
                     var factor = attempt * delay.TotalMilliseconds;
@@ -85,18 +85,18 @@ namespace Spritely.Redo
         }
 
         /// <summary>
-        /// Begins an retryable operation using the progressive delay backoff strategy.
+        /// Begins an retriable operation using the progressive delay back-off strategy.
         /// delay * (attempt * scaleFactor) where attempt is 0-based.
-        /// If attempt * scaleFactor is less than 1 then backoff becomes a constant delay equal to initial delay.
+        /// If attempt * scaleFactor is less than 1 then back-off becomes a constant delay equal to initial delay.
         /// </summary>
         /// <param name="initial">The initial delay.</param>
         /// <param name="scaleFactor">The scale factor. Defaults to 1.0.</param>
         /// <returns>
-        /// A backoff strategy context.
+        /// A back-off strategy context.
         /// </returns>
-        public static BackoffStrategy ProgressiveBackoff(TimeSpan initial, double scaleFactor = 1.0)
+        public static BackOffStrategy ProgressiveBackOff(TimeSpan initial, double scaleFactor = 1.0)
         {
-            return new BackoffStrategy(
+            return new BackOffStrategy(
                 attempt =>
                 {
                     var factor = attempt * scaleFactor;
@@ -110,18 +110,18 @@ namespace Spritely.Redo
         }
 
         /// <summary>
-        /// Begins an retryable operation using the exponential delay backoff strategy.
+        /// Begins an retriable operation using the exponential delay back-off strategy.
         /// delay * (scaleFactor ^ attempt) where attempt is 0-based.
-        /// If scaleFactor ^ attempt is less than 1 then backoff becomes a constant delay equal to initial delay.
+        /// If scaleFactor ^ attempt is less than 1 then back-off becomes a constant delay equal to initial delay.
         /// </summary>
         /// <param name="delay">The initial delay.</param>
         /// <param name="scaleFactor">The scale factor. Defaults to 2.0.</param>
         /// <returns>
-        /// A backoff strategy context.
+        /// A back-off strategy context.
         /// </returns>
-        public static BackoffStrategy ExponentialBackoff(TimeSpan delay, double scaleFactor = 2.0)
+        public static BackOffStrategy ExponentialBackOff(TimeSpan delay, double scaleFactor = 2.0)
         {
-            return new BackoffStrategy(
+            return new BackOffStrategy(
                 attempt =>
                 {
                     var factor = Math.Pow(scaleFactor, attempt);

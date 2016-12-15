@@ -15,11 +15,11 @@
     <tags>Spritely Redo fluent exception handling</tags>
   </metadata>
   <files>
-    <file src="BackoffStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\BackoffStrategy.cs" />
-    <file src="RetryableAction.cs" target="content\net45\.Spritely.Recipes\Redo\RetryableAction.cs" />
-    <file src="RetryableActionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\RetryableActionAsync.cs" />
-    <file src="RetryableFunction.cs" target="content\net45\.Spritely.Recipes\Redo\RetryableFunction.cs" />
-    <file src="RetryableFunctionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\RetryableFunctionAsync.cs" />
+    <file src="BackOffStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\BackOffStrategy.cs" />
+    <file src="RetriableAction.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableAction.cs" />
+    <file src="RetriableActionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableActionAsync.cs" />
+    <file src="RetriableFunction.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableFunction.cs" />
+    <file src="RetriableFunctionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableFunctionAsync.cs" />
     <file src="Using.cs" target="content\net45\.Spritely.Recipes\Redo\Using.cs" />
   </files>
 </package>

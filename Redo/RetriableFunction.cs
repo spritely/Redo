@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="RetryableFunction.cs">
+// <copyright file="RetriableFunction.cs">
 //   Copyright (c) 2016. All rights reserved.
 //   Licensed under the MIT license. See LICENSE file in the project root for full license information.
 // </copyright>
@@ -16,7 +16,7 @@ namespace Spritely.Redo
     using System.Threading.Tasks;
 
     /// <summary>
-    ///     Represents a retryable operation which can accumulate terminating conditions using .Until(...)
+    ///     Represents a retriable operation which can accumulate terminating conditions using .Until(...)
     ///     or perform the execution using .Now().
     /// </summary>
     /// <typeparam name="T">The type of operation (must be the type of the child class).</typeparam>
@@ -26,7 +26,7 @@ namespace Spritely.Redo
     [System.CodeDom.Compiler.GeneratedCode("Spritely.Recipes", "See package version number")]
 #pragma warning disable 0436
 #endif
-    internal partial class RetryableFunction<T>
+    internal partial class RetriableFunction<T>
     {
         private readonly Func<long, TimeSpan> getDelay;
         private readonly long maxRetries;
@@ -37,7 +37,7 @@ namespace Spritely.Redo
         private readonly ICollection<Func<T, bool>> untilValids = new List<Func<T, bool>>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="RetryableFunction{T}"/> class.
+        /// Initializes a new instance of the <see cref="RetriableFunction{T}"/> class.
         /// </summary>
         /// <param name="getDelay">The function that determines the next delay given the current attempt number.</param>
         /// <param name="maxRetries">The maximum number of retries to perform the operation before giving up and throwing the underlying exception.</param>
@@ -45,7 +45,7 @@ namespace Spritely.Redo
         /// <param name="exceptionsToRetryOn">The exceptions to retry on.</param>
         /// <param name="exceptionsToThrowOn">The exceptions to throw on.</param>
         /// <param name="operation">The operation to execute and retry as needed.</param>
-        public RetryableFunction(Func<long, TimeSpan> getDelay, long maxRetries, Action<Exception> report, ICollection<Type> exceptionsToRetryOn, ICollection<Type> exceptionsToThrowOn, Func<T> operation)
+        public RetriableFunction(Func<long, TimeSpan> getDelay, long maxRetries, Action<Exception> report, ICollection<Type> exceptionsToRetryOn, ICollection<Type> exceptionsToThrowOn, Func<T> operation)
         {
             if (getDelay == null)
             {
@@ -91,7 +91,7 @@ namespace Spritely.Redo
         /// </summary>
         /// <param name="isValid">The function to call to verify validity.</param>
         /// <returns>This instance for chaining other operations.</returns>
-        public RetryableFunction<T> Until(Func<T, bool> isValid)
+        public RetriableFunction<T> Until(Func<T, bool> isValid)
         {
             if (isValid == null)
             {
@@ -104,9 +104,10 @@ namespace Spritely.Redo
         }
 
         /// <summary>
-        /// Performs the operation Now.
+        /// Performs the operation Now retrying as appropriate.
         /// </summary>
         /// <returns>The result of the operation.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object)", Justification = "Do not want to be putting resources into client assemblies for the recipe.")]
         public T Now()
         {
             var attempt = 0L;
