@@ -2,7 +2,7 @@
 # It is a continuously incrementing number so when used it violates the reset
 # smaller build parts rule of semantic versioning. Therefore we introduce a
 # second environment variable semantic_version.
-version: 0.4.0.{build}
+version: 0.5.0.{build}
 
 os: Visual Studio 2015
 
@@ -37,10 +37,8 @@ build:
   verbosity: normal
 
 after_test:
-  - nuget pack "%APPVEYOR_BUILD_FOLDER%\Redo\Recipes.Redo.nuspec" -BasePath "%APPVEYOR_BUILD_FOLDER%\Redo" -Properties "Configuration=%configuration%;Platform=%platform%;Version=%semantic_version%" -OutputDirectory "%TEMP%" -Verbosity detailed
+  - nuget pack "%APPVEYOR_BUILD_FOLDER%\Redo\Redo.nuspec" -BasePath "%APPVEYOR_BUILD_FOLDER%\Redo" -Properties "Configuration=%configuration%;Platform=%platform%;Version=%semantic_version%" -OutputDirectory "%TEMP%" -Verbosity detailed
   - appveyor PushArtifact "%TEMP%\Spritely.Recipes.Redo.%semantic_version%.nupkg"
-  - nuget pack "%APPVEYOR_BUILD_FOLDER%\Redo\Redo.nuspec" -BasePath "%APPVEYOR_BUILD_FOLDER%\Redo\bin\%configuration%" -Properties "Configuration=%configuration%;Platform=%platform%;Version=%semantic_version%" -OutputDirectory "%TEMP%" -Verbosity detailed
-  - appveyor PushArtifact "%TEMP%\Spritely.Redo.%semantic_version%.nupkg"
 
 deploy:
   - provider: NuGet

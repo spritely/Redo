@@ -5,8 +5,17 @@
          <Word></Word>
       </Unrecognized>
       <Recognized>
+         <Word>Api</Word>
+         <Word>Auth</Word>
+         <Word>Cors</Word>
          <Word>Cqrs</Word>
          <Word>deserializes</Word>
+         <Word>Jwt</Word>
+         <Word>gzip</Word>
+         <Word>parsable</Word>
+         <Word>retriable</Word>
+         <Word>Sha</Word>
+         <Word>typeof</Word>
       </Recognized>
       <Deprecated>
          <Term PreferredAlternate=""></Term>
