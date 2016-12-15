@@ -343,6 +343,30 @@ namespace Spritely.Redo.Test
             result.Should().Be(5);
         }
 
+        [Test]
+        public async Task Now_does_not_return_until_value_is_not_null_when_UntilNotNull_is_used()
+        {
+            var retries = 9;
+            var times = 0;
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
+                .RunAsync(
+                    () =>
+                    {
+                        times++;
+
+                        if (times < retries)
+                        {
+                            return null;
+                        }
+
+                        return Task.FromResult(new object());
+                    })
+                .UntilNotNull();
+
+            await retriableOperation.Now();
+            times.Should().Be(retries);
+        }
+
         private void AssertThrowsAggregateExceptionWithSingleInner<TException>(RetriableFunctionAsync<object> retriableOperation)
             where TException : Exception
         {

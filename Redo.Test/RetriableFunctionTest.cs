@@ -341,5 +341,29 @@ namespace Spritely.Redo.Test
 
             result.Should().Be(5);
         }
+
+        [Test]
+        public void Now_does_not_return_until_value_is_not_null_when_UntilNotNull_is_used()
+        {
+            var retries = 3;
+            var times = 0;
+            var retriableOperation = Using.ConstantBackOff(TimeSpan.FromMilliseconds(10))
+                .Run(
+                    () =>
+                    {
+                        times++;
+
+                        if (times < retries)
+                        {
+                            return null;
+                        }
+
+                        return new object();
+                    })
+                .UntilNotNull();
+
+            retriableOperation.Now();
+            times.Should().Be(retries);
+        }
     }
 }

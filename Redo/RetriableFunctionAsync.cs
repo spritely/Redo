@@ -104,6 +104,17 @@ namespace Spritely.Redo
         }
 
         /// <summary>
+        /// Specify that a retry should occur any time the result of Run is null.
+        /// </summary>
+        /// <returns>This instance for chaining other operations.</returns>
+        public RetriableFunctionAsync<T> UntilNotNull()
+        {
+            untilValids.Add(value => value != null);
+
+            return this;
+        }
+
+        /// <summary>
         /// Performs the asynchronous operation Now retrying as appropriate.
         /// </summary>
         /// <returns>The task being awaited for managing the asynchronous operation.</returns>

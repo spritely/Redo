@@ -8,97 +8,81 @@ Provides .NET exception handling retry logic via a fluent interface.
 Let's get right to it:
 
 ```csharp
-Try.Running(() => myObject.CallThatThrowsSometimes())
-   .Until(value => value == "success");
+// Run myObject.CallThatThrowsSometimes() and retry every 5 seconds if it throws any exceptions.
+Using.ConstantBackOff(TimeSpan.FromSeconds(5))
+    .Run(() => myObject.CallThatThrowsSometimes())
+    .Now();
 
-// This will run the myObject.CallThatThrowsSometimes and catch all exceptions that are thrown,
-// pause and retry until the Until lambda expression returns true. Until receives the value
-// returned from myObject.CallThatThrowsSometimes() so you can make keep going if it hasn't
-// returned the value you were expecting yet.
+// Query database retrying every 5 seconds, only catch SqlException, and return the query results.
+// This will only catch SqlException.
+var users = Using.ConstantBackOff(TimeSpan.FromSeconds(5))
+    .RetryOn<SqlException>()
+    .Run(() => myDb.GetUsers())
+    .Now();
 
-// If you find yourself just needing to make sure a value isn't null:
-Try.Running(() => myObject.CallThatThrowsSometimes())
-   .Until(value => value != null);
+// Retry query on any SqlExceptions until the results are not null.
+var users = Using.ConstantBackOff(TimeSpan.FromSeconds(5))
+    .RetryOn<SqlException>()
+    .Run(() => myDb.GetUsers())
+    .UntilNotNull()
+    .Now();
 
-// You can write it more concisely like this:
-Try.Running(() => myObject.CallThatThrowsSometimes())
-   .UntilNotNull();
+// Query until the results are not null and some users are returned. Until recieves the value
+// returned from the Run call and true terminates the execution while false continues retrying.
+var users = Using.ConstantBackOff(TimeSpan.FromSeconds(5))
+    .RetryOn<SqlException>()
+    .Run(() => myDb.GetUsers())
+    .UntilNotNull()
+    .Until(users => users.Any())
+    .Now();
 
-// This assumes that myObject.CallThatThrowsSomtimes() returns a value (i.e. is a Func<T>)
-// If you have a void return type, it's no problem, but you can't use UntilNotNull because
-// there is nothing to check for against null. You can still use Until though, but you'll
-// be checking some other property as follows:
-Try.Running(() => myObject.CallThatThrowsSometimes())
-   .Until(() => myObject.WasExpectationMet());
+// Now we will only handle FileNotFoundExceptions, all other exceptions will continue to be thrown
+// and the wait time between tries will be 500ms, 1000ms, 1500ms, 2000ms, etc.
+var file = Using.LinearBackOff(TimeSpan.FromMilliseconds(500))
+    .RetryOn<FileNotFoundException>()
+    .Run(() => File.OpenRead("SomeFile.txt"))
+    .Now();
 
-try
-{
-    myCall.ThatThrowsSometimes()
-}
-catch (Exception ex)
-{
-    // This isn't what you always want is it?
-}
+// Set the maximum number of retries to 5
+// Executes up to 6 times: initial try and 5 waits and retries
+var file = Using.LinearBackOff(TimeSpan.FromMilliseconds(500))
+    .WithMaxRetries(5)
+    .RetryOn<FileNotFoundException>()
+    .Run(() => File.OpenRead("SomeFile.txt"))
+    .Now();
 
-// So we can do this instead
-Try.Running(() => File.OpenRead("SomeoneElseCreatesMe.txt"))
-   .Handle<FileNotFoundException>()
-   .UntilNotNull();
-   
-// Now we will only handle FileNotFoundExceptions, all other exceptions will continue to be thrown.
+// Handle more than one type of exception but explicitly throw others. FileNotFoundException derives
+// from IOException so it would be retried except that throw on takes priority over retry on.
+var file = Using.LinearBackOff(TimeSpan.FromMilliseconds(500))
+    .RetryOn<IOException>()
+    .RetryOn<UnauthorizedAccessException>()
+    .ThrowOn<FileNotFoundException>
+    .Run(() => File.OpenRead("SomeFile.txt"))
+    .Now();
 
-// More than one type to catch? No problem...
+// Want to log the exceptions that occur while retrying?
+var file = Using.LinearBackOff(TimeSpan.FromMilliseconds(500))
+    .WithReporter(ex => MyLogger.Write(ex))
+    .Run(() => File.OpenRead("SomeFile.txt"))
+    .Now();
 
-Try.Running(() => File.OpenRead("SomeoneElseCreatesMe.txt"))
-   .Handle<FileNotFoundException>()
-   .Handle<DirectoryNotFoundException>()
-   .UntilNotNull();
+// Linear back-off with different delta 500ms, 600ms (500 + 100), 700ms (500 + 200), 800ms (500 + 300), etc.
+var file = Using.LinearBackOff(TimeSpan.FromMilliseconds(500), delta: TimeSpan.FromMilliseconds(100))
+    .Run(() => File.OpenRead("SomeFile.txt"))
+    .Now();
 
-// Want to log the exceptions that occur?
+// Progressive back-offs 100ms, 200ms (100 + 100 * 1), 300ms (100 + 100 * 2), 400ms (100 + 100 * 3), etc.
+var file = Using.ProgressiveBackOff(TimeSpan.FromMilliseconds(100))
+    .Run(() => File.OpenRead("SomeFile.txt"))
+    .Now();
 
-Try.Running(() => File.OpenRead("SomeoneElseCreatesMe.txt"))
-   .Report(ex => MyLogger.Write(ex))
-   .UntilNotNull();
+// Progressive is not the same as Linear. It looks like linear above because the scaleFactor defaults to 1.
+// 100ms, 1100ms (100 + 100 * 10), 2100ms (100 + 100 * 20), 3100ms (100 + 100 * 30), etc.
+var file = Using.ProgressiveBackOff(TimeSpan.FromMilliseconds(100), scaleFactor: 10)
+    .Run(() => File.OpenRead("SomeFile.txt"))
+    .Now();
 
-// Okay, so that's all well and good, what about if you want to control the retry strategy?
-
-Try.Running(() => File.OpenRead("SomeoneElseCreatesMe.txt"))
-   .With(new ConstantDelayRetryStrategy(maxRetries: 3, delay: TimeSpan.FromSeconds(30))
-   .UntilNotNull();
-   
-// There are several different kinds of pre-built strategies available:
-Try.Running(() => File.OpenRead("SomeoneElseCreatesMe.txt"))
-   .With(new LinearDelayRetryStrategy(scaleFactor: 100, maxRetries: 3, delay: TimeSpan.FromMilliseconds(100))
-   .UntilNotNull();
-
-// Linear adds the scaleFactor to the total delay each retry
-
-// Progressive uses scaleFactor to multiple the delay with each retry
-Try.Running(() => File.OpenRead("SomeoneElseCreatesMe.txt"))
-   .With(new ProgressiveDelayRetryStrategy(scaleFactor: 10, maxRetries: 3, delay: TimeSpan.FromMilliseconds(100))
-   .UntilNotNull();
-   
-// Exponetial uses a function like scaleFactor^attempt * delay to exponentially decay with each retry
-Try.Running(() => File.OpenRead("SomeoneElseCreatesMe.txt"))
-   .With(new ExponentialDelayRetryStrategy(scaleFactor: 2, maxRetries: 3, delay: TimeSpan.FromMilliseconds(100))
-   .UntilNotNull();
-
-// You can also create your own decay strategy by implementing this simple interface:
-public interface IRetryStrategy
-{
-    bool ShouldQuit(long attempt);
-
-    void Wait(long attempt);
-}
-
-// If you want to globally alter default settings for Try, modify them using TryDefault (the values here are the defaults):
-
-TryDefault.MaxRetries = 30;
-TryDefault.Delay = TimeSpan.FromSeconds(1);
-TryDefault.RetryStrategy = new ConstantDelayRetryStrategy();
-
-// This is empty by default
-TryDefault.ExceptionListeners.Add(ex => MyLogger.Write(ex));
-
-TryDefault.AddHandle<Exception>();
-```
+// Expenential: 10ms, 30ms (10 + 10 * 2), 50ms (10 + 10 * 4), 90ms (10 + 10 * 8), 170ms (10 + 10 * 16)
+var file = Using.ExponentialBackOff(TimeSpan.FromMilliseconds(10), scaleFactor: 2 /* this is the default */)
+    .Run(() => File.OpenRead("SomeFile.txt"))
+    .Now();
