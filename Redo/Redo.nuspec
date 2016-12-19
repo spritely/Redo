@@ -1,25 +1,27 @@
 <?xml version="1.0"?>
 <package >
-  <metadata>
-    <id>Spritely.Recipes.Redo</id>
-    <version>$version$</version>
-    <title>Spritely.Recipes.Redo</title>
-    <authors>Spritely Developers</authors>
-    <owners>Spritely Developers</owners>
-    <language>en-US</language>
-    <licenseUrl>https://github.com/spritely/Redo/blob/master/LICENSE</licenseUrl>
-    <projectUrl>https://github.com/spritely/Redo</projectUrl>
-    <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Provides .NET exception handling retry logic via a fluent interface in a recipe format.</description>
-    <copyright>Copyright (C) 2016</copyright>
-    <tags>Spritely Redo fluent exception handling</tags>
-  </metadata>
-  <files>
-    <file src="BackOffStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\BackOffStrategy.cs" />
-    <file src="RetriableAction.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableAction.cs" />
-    <file src="RetriableActionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableActionAsync.cs" />
-    <file src="RetriableFunction.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableFunction.cs" />
-    <file src="RetriableFunctionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableFunctionAsync.cs" />
-    <file src="Using.cs" target="content\net45\.Spritely.Recipes\Redo\Using.cs" />
-  </files>
+    <metadata>
+        <id>Spritely.Recipes.Redo</id>
+        <version>$version$</version>
+        <title>Spritely.Recipes.Redo</title>
+        <authors>Spritely Developers</authors>
+        <owners>Spritely Developers</owners>
+        <language>en-US</language>
+        <licenseUrl>https://github.com/spritely/Redo/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/spritely/Redo</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <summary>A lightweight exception handling retry recipe.</summary>
+        <description>Provides .NET exception handling retry logic via a fluent interface in a recipe format.</description>
+        <copyright>Copyright (C) 2016</copyright>
+        <tags>Spritely Redo fluent exception handling Recipes</tags>
+        <developmentDependency>true</developmentDependency>
+    </metadata>
+    <files>
+        <file src="BackOffStrategy.cs" target="content\net45\.Spritely.Recipes\Redo\BackOffStrategy.cs" />
+        <file src="RetriableAction.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableAction.cs" />
+        <file src="RetriableActionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableActionAsync.cs" />
+        <file src="RetriableFunction.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableFunction.cs" />
+        <file src="RetriableFunctionAsync.cs" target="content\net45\.Spritely.Recipes\Redo\RetriableFunctionAsync.cs" />
+        <file src="Using.cs" target="content\net45\.Spritely.Recipes\Redo\Using.cs" />
+    </files>
 </package>

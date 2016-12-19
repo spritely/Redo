@@ -1,5 +1,5 @@
 # Redo
-Provides .NET exception handling retry logic via a fluent interface.
+Provides .NET exception handling retry logic via a fluent interface in a recipe format (source code install).
 
 [![Build status](https://ci.appveyor.com/api/projects/status/u36afr8go5b9wgd8?svg=true)](https://ci.appveyor.com/project/Spritely/redo)
 
@@ -24,6 +24,13 @@ var users = Using.ConstantBackOff(TimeSpan.FromSeconds(5))
 var users = Using.ConstantBackOff(TimeSpan.FromSeconds(5))
     .RetryOn<SqlException>()
     .Run(() => myDb.GetUsers())
+    .UntilNotNull()
+    .Now();
+
+// Use RunAsync instead of Run for asynchronous code
+var users = await Using.ConstantBackOff(TimeSpan.FromSeconds(5))
+    .RetryOn<SqlException>()
+    .RunAsync(() => myDb.GetUsersAsync())
     .UntilNotNull()
     .Now();
 
