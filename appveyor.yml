@@ -23,13 +23,6 @@ install:
 nuget:
   disable_publish_on_pr: true
 
-assembly_info:
-  patch: false
-  file: '**\AssemblyInfo.*'
-  assembly_version: '$(semantic_version).{build}'
-  assembly_file_version: '$(semantic_version).{build}'
-  assembly_informational_version: '$(semantic_version)'
-
 build:
   parallel: true
   verbosity: normal
@@ -43,7 +36,7 @@ artifacts:
 deploy:
   - provider: NuGet
     on:
-      branch: donotpublish-master
+      branch: master
       configuration: Release
     api_key:
       secure: dUMLXnYuqF7ORswtDCtj2XgKlpLMKrXZrq9m/FEN2xu0vTClejXqADyxMEawTs2W
