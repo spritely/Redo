@@ -37,6 +37,8 @@ build:
   parallel: true
   verbosity: normal
 
+test_script:
+  - cmd: dotnet test
 
 deploy:
   - provider: NuGet
