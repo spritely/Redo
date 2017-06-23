@@ -21,7 +21,7 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_once()
         {
             var times = 0;
-            var expectedDelay = TimeSpan.FromMilliseconds(500);
+            var expectedDelay = TimeSpan.FromMilliseconds(1000);
             var retriableOperation = Using.ProgressiveBackOff(expectedDelay, scaleFactor: 10.0).Run(
                 () =>
                 {
@@ -45,8 +45,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_twice()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(300);
-            var expectedDelay = TimeSpan.FromMilliseconds(900); // 300 + (2 * 300)
+            var delay = TimeSpan.FromMilliseconds(400);
+            var expectedDelay = TimeSpan.FromMilliseconds(1200); // 400 + (2 * 400)
             var retriableOperation = Using.ProgressiveBackOff(delay, scaleFactor: 2.0).Run(
                 () =>
                 {

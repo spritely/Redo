@@ -21,7 +21,7 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_once()
         {
             var times = 0;
-            var expectedDelay = TimeSpan.FromMilliseconds(250);
+            var expectedDelay = TimeSpan.FromMilliseconds(2000);
             var retriableOperation = Using.ConstantBackOff(expectedDelay).Run(
                 () =>
                 {
@@ -37,7 +37,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 150);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
             times.Should().Be(2); // 1 failure + 1 success
         }
 
@@ -45,8 +45,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_twice()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(250);
-            var expectedDelay = TimeSpan.FromMilliseconds(500);
+            var delay = TimeSpan.FromMilliseconds(1000);
+            var expectedDelay = TimeSpan.FromMilliseconds(2000);
             var retriableOperation = Using.ConstantBackOff(delay).Run(
                 () =>
                 {
@@ -62,7 +62,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 150);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
             times.Should().Be(3); // 2 failures + 1 success
         }
 
@@ -70,8 +70,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_five_times()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(200);
-            var expectedDelay = TimeSpan.FromMilliseconds(1000);
+            var delay = TimeSpan.FromMilliseconds(400);
+            var expectedDelay = TimeSpan.FromMilliseconds(2000);
             var retriableOperation = Using.ConstantBackOff(delay).Run(
                 () =>
                 {

@@ -21,7 +21,7 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_once()
         {
             var times = 0;
-            var expectedDelay = TimeSpan.FromMilliseconds(150);
+            var expectedDelay = TimeSpan.FromMilliseconds(1000);
             var retriableOperation = Using.ExponentialBackOff(expectedDelay, scaleFactor: 10.0).Run(
                 () =>
                 {
@@ -37,7 +37,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 50);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
             times.Should().Be(2); // 1 failure + 1 success
         }
 
@@ -45,8 +45,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_twice()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(100);
-            var expectedDelay = TimeSpan.FromMilliseconds(400); // 100 + (3^1 * 100)
+            var delay = TimeSpan.FromMilliseconds(250);
+            var expectedDelay = TimeSpan.FromMilliseconds(1000); // 250 + (3^1 * 250)
             var retriableOperation = Using.ExponentialBackOff(delay, scaleFactor: 3.0).Run(
                 () =>
                 {
@@ -62,7 +62,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 75);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
             times.Should().Be(3); // 2 failures + 1 success
         }
 
@@ -70,8 +70,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_five_times()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(20);
-            var expectedDelay = TimeSpan.FromMilliseconds(620); // 20 + (20 * 2) + (20 * 4) + (20 * 8) + (20 * 16)
+            var delay = TimeSpan.FromMilliseconds(50);
+            var expectedDelay = TimeSpan.FromMilliseconds(1550); // 50 + (50 * 2) + (50 * 4) + (50 * 8) + (50 * 16)
             var retriableOperation = Using.ExponentialBackOff(delay).Run(
                 () =>
                 {
