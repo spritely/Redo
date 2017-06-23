@@ -21,7 +21,7 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_once()
         {
             var times = 0;
-            var expectedDelay = TimeSpan.FromMilliseconds(50);
+            var expectedDelay = TimeSpan.FromMilliseconds(250);
             var retriableOperation = Using.ConstantBackOff(expectedDelay).Run(
                 () =>
                 {
@@ -37,7 +37,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 50);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 150);
             times.Should().Be(2); // 1 failure + 1 success
         }
 

@@ -95,8 +95,8 @@ namespace Spritely.Redo.Test
         {
             var times = 0;
             var delay = TimeSpan.FromMilliseconds(500);
-            var delta = TimeSpan.FromMilliseconds(250);
-            var expectedDelay = TimeSpan.FromMilliseconds(1250); // 500 + 750
+            var delta = TimeSpan.FromMilliseconds(500);
+            var expectedDelay = TimeSpan.FromMilliseconds(1500); // 500 + 1000
             var retriableOperation = Using.LinearBackOff(delay, delta).Run(
                 () =>
                 {
@@ -112,7 +112,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 300);
             times.Should().Be(3); // 2 failures + 1 success
         }
 
