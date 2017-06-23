@@ -94,9 +94,9 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_twice_with_overload_2()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(100);
-            var delta = TimeSpan.FromMilliseconds(50);
-            var expectedDelay = TimeSpan.FromMilliseconds(250); // 100 + 150
+            var delay = TimeSpan.FromMilliseconds(500);
+            var delta = TimeSpan.FromMilliseconds(250);
+            var expectedDelay = TimeSpan.FromMilliseconds(1250); // 500 + 750
             var retriableOperation = Using.LinearBackOff(delay, delta).Run(
                 () =>
                 {
@@ -112,7 +112,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 75);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 150);
             times.Should().Be(3); // 2 failures + 1 success
         }
 
