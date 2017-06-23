@@ -21,7 +21,7 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_once()
         {
             var times = 0;
-            var expectedDelay = TimeSpan.FromMilliseconds(1000);
+            var expectedDelay = TimeSpan.FromMilliseconds(2000);
             var retriableOperation = Using.ProgressiveBackOff(expectedDelay, scaleFactor: 10.0).Run(
                 () =>
                 {
@@ -45,8 +45,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_twice()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(400);
-            var expectedDelay = TimeSpan.FromMilliseconds(1200); // 400 + (2 * 400)
+            var delay = TimeSpan.FromMilliseconds(700);
+            var expectedDelay = TimeSpan.FromMilliseconds(2100); // 700 + (2 * 700)
             var retriableOperation = Using.ProgressiveBackOff(delay, scaleFactor: 2.0).Run(
                 () =>
                 {
@@ -70,8 +70,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_five_times()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(100);
-            var expectedDelay = TimeSpan.FromMilliseconds(1100); // 100 + (100 * 1) + (100 * 2) + (100 * 3) + (100 * 4)
+            var delay = TimeSpan.FromMilliseconds(200);
+            var expectedDelay = TimeSpan.FromMilliseconds(2200); // 200 + (200 * 1) + (200 * 2) + (200 * 3) + (200 * 4)
             var retriableOperation = Using.ProgressiveBackOff(delay).Run(
                 () =>
                 {
@@ -87,7 +87,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 300);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
             times.Should().Be(6); // 5 failures + 1 success
         }
     }
