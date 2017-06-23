@@ -87,7 +87,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 150);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
             times.Should().Be(6); // 5 failures + 1 success
         }
     }

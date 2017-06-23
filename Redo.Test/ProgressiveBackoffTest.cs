@@ -70,8 +70,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_five_times()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(50);
-            var expectedDelay = TimeSpan.FromMilliseconds(550); // 50 + (50 * 1) + (50 * 2) + (50 * 3) + (50 * 4)
+            var delay = TimeSpan.FromMilliseconds(100);
+            var expectedDelay = TimeSpan.FromMilliseconds(1100); // 100 + (100 * 1) + (100 * 2) + (100 * 3) + (100 * 4)
             var retriableOperation = Using.ProgressiveBackOff(delay).Run(
                 () =>
                 {
@@ -87,7 +87,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 300);
             times.Should().Be(6); // 5 failures + 1 success
         }
     }
