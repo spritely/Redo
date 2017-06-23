@@ -70,8 +70,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_five_times()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(100);
-            var expectedDelay = TimeSpan.FromMilliseconds(500);
+            var delay = TimeSpan.FromMilliseconds(200);
+            var expectedDelay = TimeSpan.FromMilliseconds(1000);
             var retriableOperation = Using.ConstantBackOff(delay).Run(
                 () =>
                 {
