@@ -45,7 +45,7 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_once_with_overload_2()
         {
             var times = 0;
-            var expectedDelay = TimeSpan.FromMilliseconds(150);
+            var expectedDelay = TimeSpan.FromMilliseconds(500);
             var retriableOperation = Using.LinearBackOff(expectedDelay, TimeSpan.FromSeconds(5)).Run(
                 () =>
                 {
@@ -61,7 +61,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 50);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
             times.Should().Be(2); // 1 failure + 1 success
         }
 
@@ -145,9 +145,9 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_five_times_with_overload_2()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(50);
-            var delta = TimeSpan.FromMilliseconds(20);
-            var expectedDelay = TimeSpan.FromMilliseconds(540); // 50 + 70 + 90 + 110 + 120
+            var delay = TimeSpan.FromMilliseconds(100);
+            var delta = TimeSpan.FromMilliseconds(50);
+            var expectedDelay = TimeSpan.FromMilliseconds(1000); // 100 + 150 + 200 + 250 + 300
             var retriableOperation = Using.LinearBackOff(delay, delta).Run(
                 () =>
                 {
@@ -163,7 +163,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 150);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 250);
             times.Should().Be(6); // 5 failures + 1 success
         }
     }
