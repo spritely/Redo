@@ -15,9 +15,6 @@ configuration:
   - Debug
   - Release
 
-cache:
-  - packages -> **\packages.config
-
 install:
   - set semantic_version=%APPVEYOR_BUILD_VERSION:~0,5%
   - echo Version - %semantic_version%
@@ -39,6 +36,9 @@ build:
 
 test_script:
   - cmd: dotnet test Redo.Test\Redo.Test.csproj
+
+artifacts:
+  - path: '**\*.nupkg'
 
 deploy:
   - provider: NuGet
