@@ -22,7 +22,7 @@ namespace Spritely.Redo.Test
         [Fact]
         public void Constructor_throws_on_null_arguments()
         {
-            Action(() => new BackOffStrategy(null)).ShouldNotThrow<ArgumentNullException>();
+            Action(() => new BackOffStrategy(null)).ShouldThrow<ArgumentNullException>();
         }
 
         [Fact]
