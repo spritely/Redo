@@ -38,7 +38,7 @@ build:
   verbosity: normal
 
 test_script:
-  - cmd: dotnet test
+  - cmd: dotnet test Redo.Test\Redo.Test.csproj
 
 deploy:
   - provider: NuGet
