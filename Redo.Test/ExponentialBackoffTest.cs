@@ -37,7 +37,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 500);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 750);
             times.Should().Be(2); // 1 failure + 1 success
         }
 
@@ -62,7 +62,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 500);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 750);
             times.Should().Be(3); // 2 failures + 1 success
         }
 
@@ -87,7 +87,7 @@ namespace Spritely.Redo.Test
             retriableOperation.Now();
             stopWatch.Stop();
 
-            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 500);
+            stopWatch.Elapsed.Should().BeCloseTo(expectedDelay, precision: 750);
             times.Should().Be(6); // 5 failures + 1 success
         }
     }
