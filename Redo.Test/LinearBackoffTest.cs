@@ -95,8 +95,8 @@ namespace Spritely.Redo.Test
         {
             var times = 0;
             var delay = TimeSpan.FromMilliseconds(1000);
-            var delta = TimeSpan.FromMilliseconds(2000);
-            var expectedDelay = TimeSpan.FromMilliseconds(4000); // 1000 + 3000
+            var delta = TimeSpan.FromMilliseconds(2500);
+            var expectedDelay = TimeSpan.FromMilliseconds(4500); // 1000 + 3500
             var retriableOperation = Using.LinearBackOff(delay, delta).Run(
                 () =>
                 {
@@ -120,8 +120,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_five_times_with_overload_1()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(250);
-            var expectedDelay = TimeSpan.FromMilliseconds(3750); // 250 + 500 + 750 + 1000 + 1250
+            var delay = TimeSpan.FromMilliseconds(300);
+            var expectedDelay = TimeSpan.FromMilliseconds(4500); // 300 + 600 + 900 + 1200 + 1500
             var retriableOperation = Using.LinearBackOff(delay).Run(
                 () =>
                 {
@@ -145,9 +145,9 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_five_times_with_overload_2()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(400);
+            var delay = TimeSpan.FromMilliseconds(500);
             var delta = TimeSpan.FromMilliseconds(200);
-            var expectedDelay = TimeSpan.FromMilliseconds(4000); // 400 + 600 + 800 + 1000 + 1200
+            var expectedDelay = TimeSpan.FromMilliseconds(4500); // 500 + 700 + 900 + 1100 + 1300
             var retriableOperation = Using.LinearBackOff(delay, delta).Run(
                 () =>
                 {

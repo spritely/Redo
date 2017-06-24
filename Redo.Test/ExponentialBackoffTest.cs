@@ -45,8 +45,8 @@ namespace Spritely.Redo.Test
         public void Now_delays_by_expected_time_when_execution_fails_twice()
         {
             var times = 0;
-            var delay = TimeSpan.FromMilliseconds(1000);
-            var expectedDelay = TimeSpan.FromMilliseconds(4000); // 1000 + (3^1 * 1000)
+            var delay = TimeSpan.FromMilliseconds(1200);
+            var expectedDelay = TimeSpan.FromMilliseconds(4800); // 1200 + (3^1 * 1200)
             var retriableOperation = Using.ExponentialBackOff(delay, scaleFactor: 3.0).Run(
                 () =>
                 {
